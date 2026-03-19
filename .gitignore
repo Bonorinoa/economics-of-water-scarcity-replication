@@ -1,0 +1,38 @@
+# macOS and editor noise
+.DS_Store
+.vscode/*.log
+
+# Python caches and local environments
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+*.egg-info/
+
+# Runtime logs and temporary reports
+*.log
+*.gph
+parity_report.json
+parity_report.md
+stage_manifest.json
+
+# Untracked data skeleton: keep directories, ignore contents
+/Reproducibility Package/Data/**
+!/Reproducibility Package/Data/.gitkeep
+!/Reproducibility Package/Data/CSV/
+!/Reproducibility Package/Data/CSV/.gitkeep
+!/Reproducibility Package/Data/Excel/
+!/Reproducibility Package/Data/Excel/.gitkeep
+!/Reproducibility Package/Data/Stata/
+!/Reproducibility Package/Data/Stata/.gitkeep
+
+# Generated outputs: keep directories, ignore contents
+/Reproducibility Package/Outputs/**
+!/Reproducibility Package/Outputs/.gitkeep
+!/Reproducibility Package/Outputs/graphs/
+!/Reproducibility Package/Outputs/graphs/.gitkeep
+!/Reproducibility Package/Outputs/tables/
+!/Reproducibility Package/Outputs/tables/.gitkeep
+!/Reproducibility Package/Outputs/StataData_other/
+!/Reproducibility Package/Outputs/StataData_other/.gitkeep

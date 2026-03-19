@@ -1,0 +1,53 @@
+filename,path,sha256sum,date
+AQUASTAT Statistics Bulk Download (English).csv,CSV/AQUASTAT Statistics Bulk Download (English).csv,b0ac6f5d826d08e165d8a2280b41d4ffc5b6ca9237a4effcd046ea809165af9e,2025-10-29
+API_CC.EST_DS2_en_excel_v2_402383.xls,Excel/API_CC.EST_DS2_en_excel_v2_402383.xls,e94a8c2b48602a4cb85e021da17631b2ed1accf966a7139abd5cc45b2cb2aca8,2025-10-29
+API_GE.EST_DS2_en_excel_v2_424793.xls,Excel/API_GE.EST_DS2_en_excel_v2_424793.xls,dbe45c60182aa03da99544ef9175f111050f6ebcca9a4ed4011cbea96920bc13,2025-10-29
+API_PV.EST_DS2_en_excel_v2_427160.xls,Excel/API_PV.EST_DS2_en_excel_v2_427160.xls,3bf7583f89e7b2d6ecc56f3ad030c16ce166df1779666a86a3fd0f144ecb94da,2025-10-29
+API_RL.EST_DS2_en_excel_v2_406588.xls,Excel/API_RL.EST_DS2_en_excel_v2_406588.xls,fe2bef8f589efb5d507c662be322f06d2efa335d013f709f6a02fe7b8ea39e44,2025-10-29
+API_RQ.EST_DS2_en_excel_v2_327322.xls,Excel/API_RQ.EST_DS2_en_excel_v2_327322.xls,873a9435caada2ee182277db0a4fdf0d5c70f3341859d45f386fb2e3df4f059e,2025-10-29
+API_VA.EST_DS2_en_excel_v2_445466.xls,Excel/API_VA.EST_DS2_en_excel_v2_445466.xls,42f779ea3a1282cac15265a9a3098981bb5fc0d8ed4cb11d7c76530329ead7c0,2025-10-29
+FRED CPIAUCSL.xls,Excel/FRED CPIAUCSL.xls,0aab61444cd41131acd38d6d141853e47c57f6d64aee75afb9600e9e6138f27b,2025-10-29
+INDSTAT2 national_currency metadata.xlsx,Excel/INDSTAT2 national_currency metadata.xlsx,d00ce03f44836d7080d8f3252b628d2aac505d1d511f1f9be119544008144f6a,2025-10-29
+INDSTAT2 national_currency.xlsx,Excel/INDSTAT2 national_currency.xlsx,2f31f9bb5298d99e350b155067079b48a5520fe5fe503192725e737f11bb2825,2025-10-29
+ISO 3166 Codes.xlsx,Excel/ISO 3166 Codes.xlsx,e0d5e67e6af0555c6fa832ae1142361f68b4e96e4932d7911ad997884d2c4eab,2025-10-29
+sdg6data_download10Mar2024_641_642.xlsx,Excel/sdg6data_download10Mar2024_641_642.xlsx,071c04df1df6aab92b35f2e90ffd158cf979abbbd5356f437e4ba3800428d28e,2025-10-29
+UN_PPP2024_Output_PopTot.xlsx,Excel/UN_PPP2024_Output_PopTot.xlsx,25e1f96beb15aea5c553b6fb156a419f4098b5cc67e8934a0f32aaf32d273507,2025-10-29
+WB access to eletricity.xls,Excel/WB access to eletricity.xls,1002ff655c53129f3af52194a634523e81a0914cd8425e8545658dde0f2b8df3,2025-10-29
+WB Agriculture Forestry Fishing as a fraction of GDP.xls,Excel/WB Agriculture Forestry Fishing as a fraction of GDP.xls,ea30eaf4659b59060e032365d998c3c234a61c7c710ab6679b7d7606eb318828,2025-10-29
+WB Agriculture Forestry Fishing real annual growth.xls,Excel/WB Agriculture Forestry Fishing real annual growth.xls,611ee7c374f9aef00ea519df804db6aa8e5ef1f43d8b43c482d1dd850696ef52,2025-10-29
+WB Aquastat water stress.xls,Excel/WB Aquastat water stress.xls,f419fa21436e3001dc38e3e8e9a4a20192ac5ab784c70c0ae29922e919b95f7a,2025-10-29
+WB CPI inflation.xls,Excel/WB CPI inflation.xls,c76481ffd051d6ddf3ec411ebb87437669917f6be341520549981db40e14f196,2025-10-29
+WB Electric power transmission and distribution losses as fraction of output.xls,Excel/WB Electric power transmission and distribution losses as fraction of output.xls,16a231ff27075537e5d5064f587eafb1d3f5001119288ac03a400e511ab0368d,2025-10-29
+WB electricity from fossil fuels in %.xls,Excel/WB electricity from fossil fuels in %.xls,01e9a21b0676aa27457feb27ea78fb2a7aa9367dbfc6592bb07dc214e3478e31,2025-10-29
+WB eletric power losses in %.xls,Excel/WB eletric power losses in %.xls,5296346dabd797478a17a7e45a0eb46a10f4293bc8187b048e33d651bd841c2e,2025-10-29
+WB eletricity from coal in %.xls,Excel/WB eletricity from coal in %.xls,e42409f859df69d9ffad362a3359ae9f5a94df3e9c9f1a3854ed83843170958b,2025-10-29
+WB eletricity from hydro in %.xls,Excel/WB eletricity from hydro in %.xls,d000395df98e43836b14049128daf861af15fdffab4bfd620bba9f95879bac4a,2025-10-29
+WB eletricity from nuclear in %.xls,Excel/WB eletricity from nuclear in %.xls,1c83dd95a3ea44385bcf56a269468790f167247c986c50e2cd2a74a4ecf5d8fc,2025-10-29
+WB eletricity from oil sources in %.xls,Excel/WB eletricity from oil sources in %.xls,bc27d865d9256ccd17b914e56774da7be452060eee8bcd9172c8c31c4edf7eab,2025-10-29
+WB eletricity from renewable non hydro sources in %.xls,Excel/WB eletricity from renewable non hydro sources in %.xls,0e83b47468cc9369399290d636da06969bcd6a634d7901be4b9abb838af7fd16,2025-10-29
+WB eletricity from renewable non hydro sources in Kwh.xls,Excel/WB eletricity from renewable non hydro sources in Kwh.xls,518ed01787e5abe91a9d0dc80a3c91de70b6361201fad92a373ed42dbf9a32ff,2025-10-29
+WB Food production index.xls,Excel/WB Food production index.xls,39cb2569b22d47761a27a63b43e7b1a740fb5484bd18b7a900adc2766c5a17e3,2025-10-29
+WB freshwater withdrawal Agriculture.xls,Excel/WB freshwater withdrawal Agriculture.xls,4c006fab5919096d1fd940d54e256f3688497dc8a0df30ed31846ad5eaccb15c,2025-10-29
+WB freshwater withdrawal DomesticServices.xls,Excel/WB freshwater withdrawal DomesticServices.xls,9fe7f0a6ba69f9e3ae88382ae64a127f39b3a71861db5c68f022b43791846db0,2025-10-29
+WB freshwater withdrawal Industry.xls,Excel/WB freshwater withdrawal Industry.xls,16b11ef1f15c461174166fca89114f406915feeb28386008e99f41ae2dd18385,2025-10-29
+WB freshwater withdrawals as a fraction of available internal resources.xls,Excel/WB freshwater withdrawals as a fraction of available internal resources.xls,2774b53fbbc291d3119c9692d97f39811806651ae4d346a10f193bef390b8fa0,2025-10-29
+WB GDP growth at constant local currency.xls,Excel/WB GDP growth at constant local currency.xls,2d7c83e4906885058ac117eeaf5462915d5d907c84101b17c3064923cddd1650,2025-10-29
+WB GDP pc PPP constant 2017 USD.xls,Excel/WB GDP pc PPP constant 2017 USD.xls,ac01e33549e102e85ab73b78c9a8981aa8a3e82c1bd790fb870fe0a94704f6b7,2025-10-29
+WB Gross capital formation as a fraction of GDP.xls,Excel/WB Gross capital formation as a fraction of GDP.xls,3ae0aed6ebcecc25599fce61b416f9d30d95f084695f8f3646cd6319efed1351,2025-10-29
+WB Gross capital formation real annual growth.xls,Excel/WB Gross capital formation real annual growth.xls,42eca5bb62951ab34eea845b5bcc790fa568897a552b796d124887d5694b9fb9,2025-10-29
+WB Gross fixed capital formation as a fraction of GDP.xls,Excel/WB Gross fixed capital formation as a fraction of GDP.xls,83c33da96fcd2497aa71ec77f8f993b21dc1d9a436b55f74dcdd2c7b2f0ba1a8,2025-10-29
+WB Gross fixed capital formation of private sector.xls,Excel/WB Gross fixed capital formation of private sector.xls,68524139b03fe637b7312e6d07d53563f6bd5e8d3df19cc54ec1cf74a756cab3,2025-10-29
+WB Gross fixed capital formation real annual growth.xls,Excel/WB Gross fixed capital formation real annual growth.xls,4922941d7ebf5342bb406ea32bc8ac1c91755fd1fc3029578a7add8cbd24c1da,2025-10-29
+WB Industry as a fraction of GDP.xls,Excel/WB Industry as a fraction of GDP.xls,d6975d80d96f711f113c8357649e90b1ba73163679c354b036397e6bd53ddec5,2025-10-29
+WB Industry real annual growth.xls,Excel/WB Industry real annual growth.xls,cf7210ae836b61095edd81bfceb02b5b94601971217d9eb36751bc4d6315efbc,2025-10-29
+WB Manufacturing as a fraction of GDP.xls,Excel/WB Manufacturing as a fraction of GDP.xls,af5d0b5e652a7f89f7af41af65bf26d8c281dd9d9c27f6e1e0fbdb736da0f9bb,2025-10-29
+WB Manufacturing real annual growth.xls,Excel/WB Manufacturing real annual growth.xls,af7221263865774ef8a184f1ced38c11938b6e3db0d9dbffe3ba1277a6047eb9,2025-10-29
+WB Population.xls,Excel/WB Population.xls,6a00e609eca3a04a2c4c65370e0776b845aba642650a9c17d56cf0a4da5024b8,2025-10-29
+WB Services as a fraction of GDP.xls,Excel/WB Services as a fraction of GDP.xls,1c9d474f481d4ac17e673f063cbb56bf95777e0c1e99de808c7e6ff6706c49e6,2025-10-29
+WB Services real annual growth.xls,Excel/WB Services real annual growth.xls,7b95bd76bd41d16d0c2bba8f56470fc820faf6b3d7f56a3c646fa4c79f7f417e,2025-10-29
+WB Total natural resources rents as a fraction of GDP.xls,Excel/WB Total natural resources rents as a fraction of GDP.xls,2e964deea29a8d0ad7c7a3b9bfb16609926f511d28f504bed38ab7c8a44697e1,2025-10-29
+WB USDxr.xls,Excel/WB USDxr.xls,070cb46a387a524bf81a5ae0859470e45fc7b269b0dfce79a7d19a2fe90a9b8a,2025-10-29
+WB WaterProductivity.xls,Excel/WB WaterProductivity.xls,a90d6ee64dfda6ba6f34433eb2357ea850213cb42e3679140006af8ffda0b431,2025-10-29
+CountryDataMatching_vs0.dta,Stata/CountryDataMatching_vs0.dta,e0b80ef3b9b889158f2477c5e5ad39b810e7d5fb652f63b905663c2e691bfe29,2025-10-29
+pwt1001.dta,Stata/pwt1001.dta,746a483666a5371f8e686f8bfea6c20e211e5ecdd928842c6e01d2bd623ffb4c,2025-10-29
+pwt91_na_data.dta,Stata/pwt91_na_data.dta,395258778cd8fb1b3273bc0a7cba4b986c6bd73e87ba8607505b6ad8a8e0c2cb,2025-10-29

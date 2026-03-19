@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "water-scarcity-replication"
+version = "0.1.0"
+description = "Staged Python scaffold for the Frost et al. water scarcity replication."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+  "linearmodels>=5.0",
+  "matplotlib>=3.8",
+  "openpyxl>=3.1",
+  "pandas>=2.2",
+  "pyarrow>=15.0",
+  "pyreadstat>=1.2",
+  "pytest>=8.0",
+  "seaborn>=0.13",
+  "statsmodels>=0.14",
+  "xlrd>=2.0"
+]
+
+[project.scripts]
+water-scarcity = "water_scarcity.run:main"
+water-scarcity-verify = "water_scarcity.verify:main"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

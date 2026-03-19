@@ -1,0 +1,23 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Stata: full mac replication",
+      "type": "shell",
+      "command": "${env:STATA_BIN}",
+      "args": [
+        "-b",
+        "do",
+        "/Users/bonorinoa/Desktop/ECN726/TermProject_2/Reproducibility Package/Codes/Main_WaterScarcity_FMM_2025_mac.do"
+      ],
+      "options": {
+        "cwd": "/Users/bonorinoa/Desktop/ECN726/TermProject_2"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    }
+  ]
+}
