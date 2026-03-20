@@ -59,6 +59,7 @@ destring Year, replace force
 joinby iso3 Year using "$pathDs/Data_WB.dta", unmatched(master) update
 g popW = ceil(Population/1000)
 collapse Value [fw=popW], by(Reg)
+drop if Reg=="Americas"
 graph bar Value, over(Reg, sort(Value) descending) ytitle("USDm3") subtitle("Continents") saving(graph4.gph, replace)
 graph combine graph1.gph graph2.gph graph3.gph graph4.gph, rows(4) cols(1) `G4' subtitle("Ratio of dollar value added to the volume of water used")
 if "`c(os)'" == "Windows" {
@@ -121,6 +122,7 @@ g Year=2020
 joinby iso3 Year using "$pathDs/Data_WB.dta", unmatched(master) update
 g popW = ceil(Population/1000)
 collapse Value* [fw=popW], by(Reg)
+drop if Reg=="Americas"
 local gc1 "over(Reg, sort(Value1) descending label(labsize(*.52))) `gc'"   
 local gc2 "over(Reg, sort(Value2) descending label(labsize(*.52))) `gc'"  
 local gc3 "over(Reg, sort(Value3) descending label(labsize(*.52))) `gc'"  

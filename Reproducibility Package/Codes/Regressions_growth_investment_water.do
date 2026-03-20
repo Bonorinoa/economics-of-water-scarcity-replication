@@ -2,7 +2,7 @@ local G2 = "ysize(5.4) xsize(9.2) imargin(0 0) graphregion(color(white) margin(v
 local G4 = "ysize(10.8) xsize(9.2) imargin(0 0 0 0) graphregion(color(white) margin(vsmall))"
 local rep1 "replace"
 local rep2 "append"
-capture log close
+tempfile table6_effects
 
 use "$pathDs/Data_WB.dta", clear
 joinby CountryName Year using "$pathDs/Aquastat_Selected.dta", unmatched(both) update
@@ -73,23 +73,23 @@ foreach var of varlist Freshwater_withdrawal_rIR FreshwaterWithdrawal_rtrwr Wate
 g D_`var' = L.`var'
 replace D_`var' = `var'-D_`var'
 }
-log using "$pathR/tables/Table6.smcl", replace
 // Demeaned one-standard deviation shocks of water scarcity
 tabstat D_Freshwater_withdrawal_rIR D_FreshwaterWithdrawal_rtrwr D_WaterStress D_WaterProductivity  D_WaterUseEfficiency, statistics(sd)
 matrix input Bsd = (1.438162,  1.390991, 1.592205)
-log close
+tempname table6_post
+postfile `table6_post' str24 outcome double fw_internal fw_renewable fw_available using "`table6_effects'", replace
 
 rename GDP_gr Total_gr  
 xtreg  Total_gr `Xv1' `Xe1', fe
 local k=1
 foreach var of varlist Total_gr { //  AgricultureForestryFishing_gr Industry_gr Manufacturing_gr Services_gr
 reghdfe `var' `Xv1' `Xe1', absorb(id Year) vce(cluster id)    //xtreg `var' i.(Year), fe
-outreg2 using "$pathR/tables/Table3_GDPgr.xls", `rep`k'' //GDP_`var'  //estadd listcoef, std  // help
+outreg2 using "$pathTRaw/Table3_GDPgr.xls", `rep`k'' //GDP_`var'  //estadd listcoef, std  // help
 local Coef1 = _b[Freshwater_withdrawal_rIR] 
 local k=2
 foreach v of numlist 2 3  { // 7 8 //forv v=2/10  { 
 reghdfe `var' `Xv`v'' `Xe1', absorb(id Year) vce(cluster id)   
-outreg2 using "$pathR/tables/Table3_GDPgr.xls", `rep`k'' 
+outreg2 using "$pathTRaw/Table3_GDPgr.xls", `rep`k'' 
 if `v'==2  { 
 local Coef2 = _b[FreshwaterWithdrawal_rtrwr] 
 }
@@ -98,52 +98,42 @@ local Coef3 = _b[WaterStress]
 }
 }
 }
-log using "$pathR/tables/Table6.smcl", append
 local b1 = Bsd[1,1]*`Coef1'
 local b2 = Bsd[1,2]*`Coef2'
 local b3 = Bsd[1,3]*`Coef3'
-// First column: GDP growth one standard-deviation effects
-display("`b1'")
-display("`b2'")
-display("`b3'")
-log close
+post `table6_post' ("GDP growth") (`b1') (`b2') (`b3')
 
 local k=1
 foreach var of varlist GFCF_gr { // Gross_capital_formation_gr Gross_capital_formation_rGDP GFCF_Private_rGDP GFCF_rGDP GFCF_Private_rGDP GFCF_rGDP
 reghdfe `var' `Xv1' `Xe1', absorb(id Year) vce(cluster id)   
-outreg2 using "$pathR/tables/Table4_Investment.xls", `rep`k''
+outreg2 using "$pathTRaw/Table4_Investment.xls", `rep`k''
 local Coef1 = _b[Freshwater_withdrawal_rIR] 
 local k=2
 foreach v of numlist 2 3  { // 7 8 //forv v=2/10  { 
 reghdfe `var' `Xv`v'' `Xe1', absorb(id Year) vce(cluster id)   
-outreg2 using "$pathR/tables/Table4_Investment.xls", `rep`k''
+outreg2 using "$pathTRaw/Table4_Investment.xls", `rep`k''
 if `v'==2  { 
 local Coef2 = _b[FreshwaterWithdrawal_rtrwr] 
 }
 if `v'==3  { 
 local Coef3 = _b[WaterStress] 
 }
-} 
 }
-log using "$pathR/tables/Table6.smcl", append
+} 
 local b1 = Bsd[1,1]*`Coef1'
 local b2 = Bsd[1,2]*`Coef2'
 local b3 = Bsd[1,3]*`Coef3'
-// Second column: Fixed Investment one standard-deviation effects
-display("`b1'")
-display("`b2'")
-display("`b3'")
-log close
+post `table6_post' ("Investment growth") (`b1') (`b2') (`b3')
 
 local k=1
 foreach var of varlist CPI_inf { //  AgricultureForestryFishing_gr Industry_gr Manufacturing_gr Services_gr
 reghdfe `var' `Xv1' `Xe1', absorb(id Year) vce(cluster id)    //xtreg `var' i.(Year), fe
-outreg2 using "$pathR/tables/Table5_CPI.xls", `rep`k'' //GDP_`var'  //estadd listcoef, std  // help
+outreg2 using "$pathTRaw/Table5_CPI.xls", `rep`k'' //GDP_`var'  //estadd listcoef, std  // help
 local Coef1 = _b[Freshwater_withdrawal_rIR] 
 local k=2
 foreach v of numlist 2 3 { // 7 8 //forv v=2/10  { 
 reghdfe `var' `Xv`v'' `Xe1', absorb(id Year) vce(cluster id)   
-outreg2 using "$pathR/tables/Table5_CPI.xls", `rep`k'' 
+outreg2 using "$pathTRaw/Table5_CPI.xls", `rep`k'' 
 if `v'==2  { 
 local Coef2 = _b[FreshwaterWithdrawal_rtrwr] 
 }
@@ -152,25 +142,12 @@ local Coef3 = _b[WaterStress]
 }
 }
 }
-log using "$pathR/tables/Table6.smcl", append
 local b1 = Bsd[1,1]*`Coef1'
 local b2 = Bsd[1,2]*`Coef2'
 local b3 = Bsd[1,3]*`Coef3'
-// Third column: CPI one standard-deviation effects
-display("`b1'")
-display("`b2'")
-display("`b3'")
-log close
-
-local k=1
-foreach var of varlist FoodProduction NaturalResourceRents { //  AgricultureForestryFishing_gr Industry_gr Manufacturing_gr Services_gr
-reghdfe `var' `Xv1' `Xe1', absorb(id Year) vce(cluster id)    //xtreg `var' i.(Year), fe
-outreg2 using "$pathR/tables/Food_NatResR.xls", `rep`k'' //GDP_`var'  //estadd listcoef, std  // help
-local k=2
-foreach v of numlist 2 3 7 8 {  //forv v=2/10  { 
-reghdfe `var' `Xv`v'' `Xe1', absorb(id Year) vce(cluster id)   
-outreg2 using "$pathR/tables/Food_NatResR.xls", `rep`k'' 
-}
-}
+post `table6_post' ("Inflation") (`b1') (`b2') (`b3')
+postclose `table6_post'
+use "`table6_effects'", clear
+export delimited using "$pathTRaw/Table6_effects.csv", replace
 
 //  //

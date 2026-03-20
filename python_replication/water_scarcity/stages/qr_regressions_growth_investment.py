@@ -10,15 +10,9 @@ def build_stage() -> StageDefinition:
         description="Estimate the panel quantile regressions for growth, inflation, and investment.",
         dependencies=("format_aquastat", "format_pwt", "format_wb"),
         expected_outputs=(
-            "tables/GDPgr_QR25.xls",
-            "tables/GDPgr_QR50.xls",
-            "tables/GDPgr_QR75.xls",
-            "tables/Food_NatResR_QR25.xls",
-            "tables/Food_NatResR_QR50.xls",
-            "tables/Food_NatResR_QR75.xls",
-            "tables/Investment_QR25.xls",
-            "tables/Investment_QR50.xls",
-            "tables/Investment_QR75.xls",
+            "tables/TableA4.tex",
+            "tables/TableA5.tex",
+            "tables/TableA6.tex",
         ),
         notes=("This is the hardest stage to reproduce exactly in Python because the Stata package uses xtqreg.",),
     )

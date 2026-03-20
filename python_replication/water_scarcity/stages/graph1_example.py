@@ -10,5 +10,4 @@ def build_stage() -> StageDefinition:
         description="Build Graph 1 for total renewable water resources per capita.",
         dependencies=("format_aquastat", "format_wb"),
         expected_outputs=("graphs/Fig1_water_pc.png",),
-        supplementary_outputs=("graphs/Fig1_water_pc.emf",),
     )

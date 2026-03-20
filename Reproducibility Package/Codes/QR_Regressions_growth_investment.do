@@ -42,34 +42,26 @@ rename GDP_gr Total_gr
 foreach qr of numlist 0.25 0.50 0.75 {  
 local q=100*`qr'
 local k=1
-foreach var of varlist Total_gr CPI_inf { 
-xtqreg `var' `Xv1' `Xe1', id(id) q(`qr') 
-outreg2 using "$pathR/tables/GDPgr_QR`q'.xls", `rep`k'' 
+foreach v of numlist 1 2 3 {
+xtqreg Total_gr `Xv`v'' `Xe1', id(id) q(`qr') 
+outreg2 using "$pathTRaw/GDPgr_QR`q'.xls", `rep`k'' 
 local k=2
-foreach v of numlist 2 3 {  
-xtqreg `var' `Xv`v'' `Xe1', id(id) q(`qr')  
-outreg2 using "$pathR/tables/GDPgr_QR`q'.xls", `rep`k'' 
-}
-}
-local k=1
-foreach var of varlist FoodProduction NaturalResourceRents { 
-xtqreg `var' `Xv1' `Xe1', id(id) q(`qr') 
-outreg2 using "$pathR/tables/Food_NatResR_QR`q'.xls", `rep`k'' 
-local k=2
-foreach v of numlist 2 3 { 
-xtqreg `var' `Xv`v'' `Xe1', id(id) q(`qr')  
-outreg2 using "$pathR/tables/Food_NatResR_QR`q'.xls", `rep`k'' 
-}
 }
 local k=1
 foreach var of varlist GFCF_gr { // Gross_capital_formation_gr Gross_capital_formation_rGDP GFCF_Private_rGDP GFCF_rGDP GFCF_Private_rGDP GFCF_rGDP
 xtqreg `var' `Xv1' `Xe1', id(id) q(`qr') 
-outreg2 using "$pathR/tables/Investment_QR`q'.xls", `rep`k''
+outreg2 using "$pathTRaw/Investment_QR`q'.xls", `rep`k''
 local k=2
 foreach v of numlist 2 3 {  
 xtqreg `var' `Xv`v'' `Xe1', id(id) q(`qr')  
-outreg2 using "$pathR/tables/Investment_QR`q'.xls", `rep`k'' 
+outreg2 using "$pathTRaw/Investment_QR`q'.xls", `rep`k'' 
 }
+}
+local k=1
+foreach v of numlist 1 2 3 {
+xtqreg CPI_inf `Xv`v'' `Xe1', id(id) q(`qr')
+outreg2 using "$pathTRaw/CPI_QR`q'.xls", `rep`k''
+local k=2
 }
 }
 //   //

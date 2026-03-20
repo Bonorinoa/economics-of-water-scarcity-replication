@@ -13,12 +13,6 @@ def build_stage() -> StageDefinition:
             "graphs/Fig2_daily_water_use_per_capita.png",
             "graphs/Fig3_WaterStress_SectorsSDG.png",
             "graphs/Fig4_WaterStress_WB.png",
-            "Fig5_WaterStress_2000_2020_WB.png",
-        ),
-        supplementary_outputs=(
-            "graphs/Fig2_daily_water_use_per_capita.emf",
-            "graphs/Fig3_WaterStress_SectorsSDG.emf",
-            "graphs/Fig4_WaterStress_WB.emf",
-            "Fig5_WaterStress_2000_2020_WB.emf",
+            "graphs/Fig5_WaterStress_2000_2020_WB.png",
         ),
     )

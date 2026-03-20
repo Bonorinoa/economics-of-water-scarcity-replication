@@ -1,60 +1,77 @@
-# The Economics of Water Scarcity: Replication Repository
+# The Economics of Water Scarcity
 
-This repository contains our working replication of Frost, Martinez Jaramillo, and Madeira, *The Economics of Water Scarcity*.
+This repo contains the Stata replication of [Frost, Martinez Jaramillo, and Madeira, *The Economics of Water Scarcity*](https://www.bis.org/publ/work1314.pdf) based off of their available [replication package](https://reproducibility.worldbank.org/catalog/393).
 
-## Status
+## How to run
 
-- The Stata replication is working on macOS and produces the expected code-generated outputs.
-- The Python package is **not** yet a full reimplementation of the paper. It currently provides a stage registry and a documented-parity verifier for the Stata outputs.
-- Graph 6 is not code-generated in the public package and must still be reconstructed manually from the OECD figures referenced by the authors.
+Clone this repository and keep the directory structure unchanged.
 
-## What Is Included
+From the cloned repository root, the code expects the official raw data package under:
 
-- The patched Stata replication package under [Reproducibility Package](/Users/bonorinoa/Desktop/ECN726/TermProject_2/Reproducibility%20Package)
-- macOS run helpers and setup docs under [docs](/Users/bonorinoa/Desktop/ECN726/TermProject_2/docs)
-- the Python verification scaffold under [python_replication](/Users/bonorinoa/Desktop/ECN726/TermProject_2/python_replication)
+```text
+./Reproducibility Package/Data/
+```
 
-## What Is Not Included In Git
+The easiest setup is:
 
-To keep this repository GitHub-safe and lightweight, the following are not versioned:
-
-- raw input datasets in `Reproducibility Package/Data/`
-- generated outputs in `Reproducibility Package/Outputs/`
-- local logs, caches, and temporary files
-
-This is intentional. Some files in the original package exceed GitHub's normal file-size limits for regular git pushes. See [About large files on GitHub](https://docs.github.com/en/enterprise-cloud@latest/repositories/working-with-files/managing-large-files/about-large-files-on-github).
-
-## Repository Layout
-
-- [Reproducibility Package](/Users/bonorinoa/Desktop/ECN726/TermProject_2/Reproducibility%20Package): Stata code, vendored ado dependencies, and the expected `Data/` and `Outputs/` directories
-- [docs/mac_stata_setup.md](/Users/bonorinoa/Desktop/ECN726/TermProject_2/docs/mac_stata_setup.md): step-by-step macOS Stata setup and execution notes
-- [python_replication](/Users/bonorinoa/Desktop/ECN726/TermProject_2/python_replication): Python oracle/verifier scaffold
-- [README.pdf](/Users/bonorinoa/Desktop/ECN726/TermProject_2/README.pdf): authors' original package README
-- [reproducibility_report_RR_WLD_2025_440.pdf](/Users/bonorinoa/Desktop/ECN726/TermProject_2/reproducibility_report_RR_WLD_2025_440.pdf): World Bank reproducibility report
-
-## Data Setup
-
-### Recommended path
-
-The easiest way to restore the ignored data is to download the official World Bank reproducibility package zip and copy its `Data/` directory into this repository.
-
-1. Download the official package zip: [RR_WLD_2025_440.zip](https://reproducibility.worldbank.org/catalog/393/download/1115/RR_WLD_2025_440.zip)
+1. Download the official World Bank reproducibility package zip: [RR_WLD_2025_440.zip](https://reproducibility.worldbank.org/catalog/393/download/1115/RR_WLD_2025_440.zip)
 2. Extract it.
 3. Copy the extracted `Data/` folder into:
 
 ```text
-/Users/bonorinoa/Desktop/ECN726/TermProject_2/Reproducibility Package/Data/
+./Reproducibility Package/Data/
 ```
 
-After that, these subdirectories should exist:
+After that, these folders should contain the raw inputs:
 
 - `Reproducibility Package/Data/CSV`
 - `Reproducibility Package/Data/Excel`
 - `Reproducibility Package/Data/Stata`
 
-### Direct source links
+From the repository root, open Stata 19 and run:
 
-If someone wants to rebuild the `Data/` directory manually from source portals, these are the authoritative sources referenced by the public reproducibility package:
+```stata
+do "run_paper_replication_mac.do"
+```
+
+It sets the repository root dynamically and then runs the canonical Stata workflow in `Reproducibility Package/Codes/Main_WaterScarcity_FMM_2025_mac.do`.
+
+## Where The Replicated Results Are
+
+Tracked reviewer-facing outputs live here:
+
+- figures: `Reproducibility Package/Outputs/graphs/*.png`
+- tables: `Reproducibility Package/Outputs/tables/Table*.tex`
+- comparison PDF: `Reproducibility Package/paper_order_replication.pdf`
+
+The tracked figure set is:
+
+- `Fig1_water_pc.png`
+- `Fig2_daily_water_use_per_capita.png`
+- `Fig3_WaterStress_SectorsSDG.png`
+- `Fig4_WaterStress_WB.png`
+- `Fig5_WaterStress_2000_2020_WB.png`
+- `Fig6_OECD_WaterPrices.png`
+- `FigA1_USDm3.png`
+- `FigA2_USDm3_Sectors.png`
+
+The tracked table set is:
+
+- `Table1.tex` through `Table8.tex`
+- `TableA1.tex` through `TableA7.tex`
+
+## What Is Ignored And Why
+
+Ignored on purpose:
+
+- `Reproducibility Package/Data/**`: raw downloaded data should be restored locally, not versioned in git
+- `Reproducibility Package/Outputs/StataData_other/**`: large Stata intermediate datasets are scratch outputs, not reviewer-facing deliverables
+- `Reproducibility Package/Outputs/tables/raw/**`: machine-oriented intermediate `.txt`, `.xls`, `.xlsx`, and `.csv` files used to assemble the final LaTeX tables
+- logs, caches, and editor noise: local runtime artifacts only
+
+## Authoritative Raw Sources
+
+If someone wants to rebuild the `Data/` folder manually instead of restoring it from the official package zip, these are the source portals referenced by the public replication package:
 
 - Official package page: [World Bank reproducibility catalog entry](https://reproducibility.worldbank.org/index.php/catalog/393)
 - AQUASTAT: [FAO AQUASTAT](https://data.apps.fao.org/aquastat/?lang=en)
@@ -67,103 +84,9 @@ If someone wants to rebuild the `Data/` directory manually from source portals, 
 - World Development Indicators: [World Development Indicators DataBank](https://databank.worldbank.org/id/6a38c2ce)
 - Worldwide Governance Indicators: [Worldwide Governance Indicators](https://www.worldbank.org/en/publication/worldwide-governance-indicators)
 
-Two files in the package are author-compiled or tied to the original bundled release and are best restored from the official zip, not rebuilt manually:
+These files are best restored from the official package zip instead of rebuilt manually:
 
 - `Reproducibility Package/Data/Stata/CountryDataMatching_vs0.dta`
 - `Reproducibility Package/Data/Excel/ISO 3166 Codes.xlsx`
-
-The legacy UNIDO files used by the package are also best restored from the official zip, because the exact download used by the authors has since been discontinued from the public portal:
-
 - `Reproducibility Package/Data/Excel/INDSTAT2 national_currency.xlsx`
 - `Reproducibility Package/Data/Excel/INDSTAT2 national_currency metadata.xlsx`
-
-## Stata Replication
-
-### First-time setup
-
-1. Install Stata 19 for macOS.
-2. Open the Stata GUI once.
-3. In Stata, run:
-
-```stata
-ssc install moremata
-do "/Users/bonorinoa/Desktop/ECN726/TermProject_2/Reproducibility Package/Codes/verify_stata_environment_mac.do"
-```
-
-4. Then run the full driver from the Stata GUI:
-
-```stata
-do "/Users/bonorinoa/Desktop/ECN726/TermProject_2/Reproducibility Package/Codes/Main_WaterScarcity_FMM_2025_mac.do"
-```
-
-Detailed setup notes are in [mac_stata_setup.md](/Users/bonorinoa/Desktop/ECN726/TermProject_2/docs/mac_stata_setup.md).
-
-### Expected output location
-
-The Stata run writes generated files under:
-
-- `Reproducibility Package/Outputs/`
-- `Reproducibility Package/Outputs/tables/`
-- `Reproducibility Package/Outputs/graphs/`
-- `Reproducibility Package/Outputs/StataData_other/`
-
-Figure 5 is exported to the `Outputs/` root. Graph 6 is not generated by code in the public package.
-
-## Python Verification Workflow
-
-The Python package is currently a verifier and staging scaffold, not a full replication of the paper.
-
-### Install
-
-```bash
-cd /Users/bonorinoa/Desktop/ECN726/TermProject_2/python_replication
-python3 -m pip install -e .
-```
-
-### Run the documented-parity verifier
-
-```bash
-cd /Users/bonorinoa/Desktop/ECN726/TermProject_2
-PYTHONPATH=/Users/bonorinoa/Desktop/ECN726/TermProject_2/python_replication \
-python3 -m water_scarcity.verify \
-  --standard documented-parity \
-  --json-out parity_report.json \
-  --md-out parity_report.md
-```
-
-This checks that the generated Stata outputs exist, are structurally readable, and match the documented artifact inventory from the package README and the World Bank reproducibility report.
-
-## What Has Been Verified
-
-- The patched Stata package runs successfully on macOS.
-- The generated Stata output inventory passes the Python documented-parity verifier.
-- The verifier explicitly handles known documentation anomalies such as filename mismatches in the World Bank report and the intentional absence of Graph 6.
-
-## What Has Not Been Verified
-
-- A full Python reproduction of the Stata econometric pipeline
-- Numerical equivalence between a Python reimplementation and the Stata estimates
-- Automatic reconstruction of Graph 6
-
-## Replicated Methodology
-
-At a high level, the package does the following:
-
-1. Harmonizes public data from AQUASTAT, SDG 6, Penn World Table, World Development Indicators, Worldwide Governance Indicators, UN population projections, UNIDO industrial statistics, and author-compiled country mappings.
-2. Constructs water scarcity, freshwater withdrawal, productivity, inflation, growth, sectoral composition, and electricity variables.
-3. Produces descriptive figures and summary tables.
-4. Estimates panel regressions with country and year fixed effects, mainly using `reghdfe`.
-5. Estimates quantile panel regressions for appendix robustness tables using `xtqreg`.
-6. Produces a 2050 water-demand projection exercise based on population and income-related inputs.
-
-## Complexity
-
-This is a moderate-to-high complexity replication:
-
-- multi-source international data harmonization
-- a nontrivial Stata workflow with multiple formatting and regression stages
-- vendored Stata dependencies in `ado/`
-- platform portability issues between Windows and macOS
-- partial manual post-processing in the public paper workflow
-
-The Stata pipeline is runnable. The Python package is useful today for verification, but a full Python translation remains a separate project.

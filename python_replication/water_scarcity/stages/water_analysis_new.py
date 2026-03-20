@@ -13,8 +13,4 @@ def build_stage() -> StageDefinition:
             "graphs/FigA1_USDm3.png",
             "graphs/FigA2_USDm3_Sectors.png",
         ),
-        supplementary_outputs=(
-            "graphs/FigA1_USDm3.emf",
-            "graphs/FigA2_USDm3_Sectors.emf",
-        ),
     )

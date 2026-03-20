@@ -9,5 +9,5 @@ def build_stage() -> StageDefinition:
         stata_script="Water_analysis_More_regressions.do",
         description="Estimate the sector-share regressions used for Table 7.",
         dependencies=("format_aquastat", "format_pwt", "format_wb"),
-        expected_outputs=("tables/Agr_Ind_Services_gr.xls",),
+        expected_outputs=("tables/Table7.tex",),
     )

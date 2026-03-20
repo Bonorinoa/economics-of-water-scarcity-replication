@@ -1,0 +1,59 @@
+\documentclass[11pt]{article}
+\usepackage[margin=0.75in]{geometry}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{pdflscape}
+
+\setlength{\parindent}{0pt}
+\pagestyle{plain}
+
+\newcommand{\repfigure}[2]{%
+  \clearpage
+  \section*{#1}
+  \begin{center}
+    \includegraphics[width=\textwidth,height=0.87\textheight,keepaspectratio]{#2}
+  \end{center}
+}
+
+\newcommand{\reptable}[2]{%
+  \clearpage
+  \section*{#1}
+  \input{#2}
+}
+
+\newcommand{\landscapetable}[2]{%
+  \clearpage
+  \begin{landscape}
+    \section*{#1}
+    \input{#2}
+  \end{landscape}
+}
+
+\begin{document}
+
+\repfigure{Figure 1}{Outputs/graphs/Fig1_water_pc.png}
+\repfigure{Figure 2}{Outputs/graphs/Fig2_daily_water_use_per_capita.png}
+\landscapetable{Table 1}{Outputs/tables/Table1.tex}
+\repfigure{Figure 3}{Outputs/graphs/Fig3_WaterStress_SectorsSDG.png}
+\repfigure{Figure 4}{Outputs/graphs/Fig4_WaterStress_WB.png}
+\repfigure{Figure 5}{Outputs/graphs/Fig5_WaterStress_2000_2020_WB.png}
+\repfigure{Figure 6}{Outputs/graphs/Fig6_OECD_WaterPrices.png}
+\reptable{Table 2}{Outputs/tables/Table2.tex}
+\reptable{Table 3}{Outputs/tables/Table3.tex}
+\landscapetable{Table 4}{Outputs/tables/Table4.tex}
+\reptable{Table 5}{Outputs/tables/Table5.tex}
+\reptable{Table 6}{Outputs/tables/Table6.tex}
+\reptable{Table 7}{Outputs/tables/Table7.tex}
+\landscapetable{Table 8}{Outputs/tables/Table8.tex}
+
+\reptable{Table A1}{Outputs/tables/TableA1.tex}
+\repfigure{Figure A1}{Outputs/graphs/FigA1_USDm3.png}
+\repfigure{Figure A2}{Outputs/graphs/FigA2_USDm3_Sectors.png}
+\landscapetable{Table A2}{Outputs/tables/TableA2.tex}
+\reptable{Table A3}{Outputs/tables/TableA3.tex}
+\reptable{Table A4}{Outputs/tables/TableA4.tex}
+\landscapetable{Table A5}{Outputs/tables/TableA5.tex}
+\reptable{Table A6}{Outputs/tables/TableA6.tex}
+\landscapetable{Table A7}{Outputs/tables/TableA7.tex}
+
+\end{document}

@@ -44,9 +44,9 @@ replace lagpop = ln(lagpop)
 g x1 = lagpop
 g x2 = lagGDPpc
 reghdfe Country_water_withdrawal lagpop lagGDPpc, absorb(id Year) vce(cluster id) 
-outreg2 using "$pathR/tables/Water_pop_gdp.xls", replace
+outreg2 using "$pathTRaw/Water_pop_gdp.xls", replace
 reghdfe Country_water_withdrawal lagpop lagGDPpc, absorb(id) vce(cluster id) 
-outreg2 using "$pathR/tables/Water_pop_gdp.xls", append  //xtreg Country_water_withdrawal lagpop lagGDPpc, fe vce(r) outreg2 using "$path/tables/Water_pop_gdp.xls", append
+outreg2 using "$pathTRaw/Water_pop_gdp.xls", append  //xtreg Country_water_withdrawal lagpop lagGDPpc, fe vce(r) outreg2 using "$path/tables/Water_pop_gdp.xls", append
 replace lagpop = ln(pop2050)
 replace lagGDPpc = x2 + 0.02*(2050-2020)
 predict Country_water_withdrawal_2050 
@@ -55,7 +55,7 @@ replace lagpop = x1
 replace lagGDPpc = x2
 foreach var of varlist Freshwater_withdrawal_rIR FreshwaterWithdrawal_rtrwr WaterStress {  //reghdfe `var' lagpop lagGDPpc, absorb(id Year) vce(cluster id)   
 reghdfe `var' lagpop lagGDPpc, absorb(id) vce(cluster id)   // outreg2 using "$path/tables/Water_pop_gdp.xls", append 
-outreg2 using "$pathR/tables/Water_pop_gdp.xls", append 
+outreg2 using "$pathTRaw/Water_pop_gdp.xls", append 
 replace lagpop = ln(pop2050)
 replace lagGDPpc = x2 + 0.02*(2050-2020)
 predict `var'_2050 
@@ -89,7 +89,9 @@ collapse Country_water_withdrawal_ Freshwater_withdrawal_rIR_ FreshwaterWithdraw
 g percentile =.
 joinby percentile using "$pathDs/data_temp0.dta", unmatched(both) update
 drop _merge
+g scenario = cond(percentile<., "Percentile " + string(percentile), "Population-weighted mean")
 order percentile, first
 sort percentile
 save "$pathDs/data_temp0.dta", replace 
-export excel using "$pathR/tables/Water_demand_2050.xlsx", firstrow(variables) nolabel replace		
+export excel using "$pathTRaw/Water_demand_2050.xlsx", firstrow(variables) nolabel replace
+export delimited using "$pathTRaw/Table1_projection.csv", replace

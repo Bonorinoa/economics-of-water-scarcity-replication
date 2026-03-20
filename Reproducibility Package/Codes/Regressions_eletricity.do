@@ -70,13 +70,9 @@ replace WSS_price = 6.70 if iso3=="DNK"
 
 rename GDP_gr Total_gr  
 local k=1
-foreach var of varlist PowerLossSh ElecHydroSh AccessElec NaturalResourceRents { 
-reghdfe `var' `Xv1' `Xe1', absorb(id Year) vce(cluster id)   
-outreg2 using "$pathR/tables/Electricity.xls", `rep`k'' 
+foreach v of numlist 1/3 {
+reghdfe ElecHydroSh `Xv`v'' `Xe1', absorb(id Year) vce(cluster id)
+outreg2 using "$pathTRaw/TableA7_hydroelectricity.xls", `rep`k''
 local k=2
-foreach v of numlist 2/3 {  
-reghdfe `var' `Xv`v'' `Xe1', absorb(id Year) vce(cluster id)   
-outreg2 using "$pathR/tables/Electricity.xls", `rep`k'' 
-}
 }
 //     //

@@ -62,6 +62,7 @@ graph bar value if SubReg=="South America", `gc00' ytitle("`Vyl'") subtitle("Sou
 joinby iso3 Year using "$pathDs/Data_WB.dta", unmatched(master) update
 g popW = ceil(Population/1000)
 collapse value [fw=popW], by(Reg)
+drop if Reg=="Americas"
 graph bar value, `gc1' ytitle("`Vyl'") subtitle("Continents") saving(graph4.gph, replace)
 graph combine graph1.gph graph2.gph graph3.gph graph4.gph, rows(4) cols(1) `G4' subtitle("Daily water use per capita (m3)")
 if "`c(os)'" == "Windows" {
@@ -74,6 +75,8 @@ keep if Reg=="Americas"
 keep if Indicatorname=="Level of water stress: freshwater withdrawal as a proportion of available freshwater resources (%)"
 drop if SDG6Dataportallevel=="`sdg0'"  |  SDG6Dataportallevel=="`sdg00'"
 keep Value SubReg iso2 iso3 CountryName SDG6Dataportallevel
+drop if iso2=="VC"
+drop if iso2=="BM"
 forv s=1/3 {
 replace SDG6Dataportallevel = "`s'" if SDG6Dataportallevel=="`sdg`s''"
 }
@@ -98,6 +101,7 @@ use "$pathDs/Data_WB.dta", clear    // Figure 4 with WB data
 keep if Year==2020
 drop if WaterStress==.
 rename WaterStress value
+drop if iso2=="GD"
 graph bar value if SubReg=="Caribbean", `gc00' ytitle("%") subtitle("Caribbean") saving(graph1.gph, replace)
 graph bar value if SubReg=="Central America" | SubReg=="Northern America", `gc00' ytitle("%") subtitle("Central and North America") saving(graph2.gph, replace)
 graph bar value if SubReg=="South America", `gc00' ytitle("%") subtitle("South America") saving(graph3.gph, replace)
@@ -105,6 +109,7 @@ destring Year, replace force
 joinby iso3 Year using "$pathDs/Data_WB.dta", unmatched(master) update
 g popW = ceil(Population/1000)
 collapse value [fw=popW], by(Reg)
+drop if Reg=="Americas"
 graph bar value, `gc1' ytitle("%") subtitle("Continents") saving(graph4.gph, replace)
 graph combine graph1.gph graph2.gph graph3.gph graph4.gph, rows(4) cols(1) `G4' subtitle("Freshwater withdrawal as a proportion of available" "freshwater resources: Total")
 if "`c(os)'" == "Windows" {
@@ -126,13 +131,14 @@ graph bar value if SubReg=="South America", `gc00' ytitle("%") subtitle("South A
 joinby iso3 Year using "$pathDs/Data_WB.dta", unmatched(master) update
 g popW = ceil(Population/1000)
 collapse value [fw=popW], by(Reg)
+drop if Reg=="Americas"
 graph bar value, `gc1' ytitle("%") subtitle("Continents") saving(graph4.gph, replace)
 graph combine graph1.gph graph2.gph graph3.gph graph4.gph, rows(4) cols(1) `G4' ///
 subtitle("Freshwater withdrawal as a proportion of available" "freshwater resources: change between 2000 and 2020")
 if "`c(os)'" == "Windows" {
-	graph export "$pathR/Fig5_WaterStress_2000_2020_WB.emf", replace
+	graph export "$pathR/graphs/Fig5_WaterStress_2000_2020_WB.emf", replace
 }
-graph export "$pathR/Fig5_WaterStress_2000_2020_WB.png", replace
+graph export "$pathR/graphs/Fig5_WaterStress_2000_2020_WB.png", replace
 
 
 clear   // 0 - Import and format Aquastat data

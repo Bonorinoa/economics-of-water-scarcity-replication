@@ -72,4 +72,5 @@ local k=2
 save "$pathDs/data_temp0.dta", replace
 }
 order _varname min max median mean sd, first
-export excel using "$pathR/tables/SummaryStats.xls", firstrow(variables) nolabel replace		
+export excel using "$pathTRaw/SummaryStats.xls", firstrow(variables) nolabel replace
+export delimited using "$pathTRaw/Table2_summary.csv", replace

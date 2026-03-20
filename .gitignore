@@ -10,12 +10,19 @@ __pycache__/
 venv/
 *.egg-info/
 
+# Python general
+python_replication/
+
 # Runtime logs and temporary reports
 *.log
 *.gph
+*.aux
+*.toc
+*.synctex.gz
 parity_report.json
 parity_report.md
 stage_manifest.json
+tmp/
 
 # Untracked data skeleton: keep directories, ignore contents
 /Reproducibility Package/Data/**
@@ -27,12 +34,16 @@ stage_manifest.json
 !/Reproducibility Package/Data/Stata/
 !/Reproducibility Package/Data/Stata/.gitkeep
 
-# Generated outputs: keep directories, ignore contents
+# Generated outputs: keep canonical paper artifacts, ignore scratch space
 /Reproducibility Package/Outputs/**
 !/Reproducibility Package/Outputs/.gitkeep
 !/Reproducibility Package/Outputs/graphs/
 !/Reproducibility Package/Outputs/graphs/.gitkeep
+!/Reproducibility Package/Outputs/graphs/*.png
 !/Reproducibility Package/Outputs/tables/
 !/Reproducibility Package/Outputs/tables/.gitkeep
+!/Reproducibility Package/Outputs/tables/*.tex
+!/Reproducibility Package/Outputs/tables/raw/
+!/Reproducibility Package/Outputs/tables/raw/.gitkeep
 !/Reproducibility Package/Outputs/StataData_other/
 !/Reproducibility Package/Outputs/StataData_other/.gitkeep

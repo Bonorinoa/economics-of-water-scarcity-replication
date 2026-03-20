@@ -9,5 +9,5 @@ def build_stage() -> StageDefinition:
         stata_script="Summary_aquastat_WB_stats.do",
         description="Create the summary-statistics table for the macro and water variables.",
         dependencies=("format_aquastat", "format_pwt", "format_wb"),
-        expected_outputs=("tables/SummaryStats.xls",),
+        expected_outputs=("tables/Table2.tex",),
     )

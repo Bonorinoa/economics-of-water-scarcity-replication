@@ -5,12 +5,12 @@ from .format_pwt import build_stage as build_format_pwt
 from .format_unido import build_stage as build_format_unido
 from .format_wb import build_stage as build_format_wb
 from .format_wb2 import build_stage as build_format_wb2
+from .figure6_oecd import build_stage as build_figure6_oecd
 from .graph1_example import build_stage as build_graph1_example
 from .list_countries_aquastat_wb import build_stage as build_list_countries_aquastat_wb
 from .qr_regressions_growth_investment import build_stage as build_qr_regressions_growth_investment
 from .regressions_eletricity import build_stage as build_regressions_eletricity
 from .regressions_growth_investment_water import build_stage as build_regressions_growth_investment_water
-from .regressions_pwt import build_stage as build_regressions_pwt
 from .regressions_water_pricing import build_stage as build_regressions_water_pricing
 from .summary_aquastat_wb_stats import build_stage as build_summary_aquastat_wb_stats
 from .water_analysis_aquastat import build_stage as build_water_analysis_aquastat
@@ -29,13 +29,13 @@ ALL_STAGES = (
     build_summary_aquastat_wb_stats(),
     build_graph1_example(),
     build_water_analysis_aquastat(),
+    build_figure6_oecd(),
     build_list_countries_aquastat_wb(),
     build_water_analysis_new(),
     build_regressions_growth_investment_water(),
     build_water_analysis_more_regressions(),
     build_water_unido(),
     build_regressions_water_pricing(),
-    build_regressions_pwt(),
     build_qr_regressions_growth_investment(),
     build_regressions_eletricity(),
 )

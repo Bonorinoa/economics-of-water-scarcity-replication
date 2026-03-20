@@ -10,10 +10,9 @@ def build_stage() -> StageDefinition:
         description="Estimate the baseline macro regressions linking water scarcity to growth, investment, and inflation.",
         dependencies=("format_aquastat", "format_pwt", "format_wb"),
         expected_outputs=(
-            "tables/Table3_GDPgr.xls",
-            "tables/Table4_Investment.xls",
-            "tables/Table5_CPI.xls",
-            "tables/Table6.smcl",
-            "tables/Food_NatResR.xls",
+            "tables/Table3.tex",
+            "tables/Table4.tex",
+            "tables/Table5.tex",
+            "tables/Table6.tex",
         ),
     )

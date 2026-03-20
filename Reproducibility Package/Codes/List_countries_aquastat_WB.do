@@ -39,4 +39,5 @@ collapse Year, by(iso2 CountryName AE)
 keep AE CountryName iso2
 sort AE CountryName
 order AE Coun iso2
-export excel using "$pathR/tables/ListCountries_Water.xlsx", firstrow(variables) replace
+export excel using "$pathTRaw/ListCountries_Water.xlsx", firstrow(variables) replace
+export delimited using "$pathTRaw/TableA1_countries.csv", replace

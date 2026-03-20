@@ -105,53 +105,24 @@ g lagpop = L.pop
 replace lagpop = ln(lagpop)
 
 reghdfe growth_value `Xv1' `Xe1' if ISIC==38, absorb(id) vce(cluster id)   
-outreg2 using "$pathR/tables/IIP_gr.xls", replace
+outreg2 using "$pathTRaw/Table8_total_manufacturing.xls", replace
 foreach v of numlist 2/3 {  // Total manufacturing
 reghdfe growth_value `Xv`v'' `Xe1' if ISIC==38, absorb(id) vce(cluster id)   
-outreg2 using "$pathR/tables/IIP_gr.xls", append
+outreg2 using "$pathTRaw/Table8_total_manufacturing.xls", append
 }
 foreach v of numlist 1/3 {  // Individual manufactures
 reghdfe growth_value `Xv_`v'' `Xe1', absorb(id Year) vce(cluster id)   
-outreg2 using "$pathR/tables/IIP_gr.xls", append
+outreg2 using "$pathTRaw/Table8_total_manufacturing.xls", append
 }
 foreach v of numlist 1/3 {  // Individual manufactures
 reghdfe growth_value `Xv`v'' `Xv_`v'' `Xe1', absorb(id Year) vce(cluster id)   
-outreg2 using "$pathR/tables/IIP_gr.xls", append
+outreg2 using "$pathTRaw/Table8_total_manufacturing.xls", append
 }
-foreach var1 of varlist Female_workers_gr GFCF_gr Output_gr Wages_gr Workers_gr Establishments_gr VA_gr {
-reghdfe `var1' `Xv1' `Xe1' if ISIC==38, absorb(id) vce(cluster id)   
-outreg2 using "$pathR/tables/`var1'.xls", replace
-foreach v of numlist 2/3 {  // Total manufacturing
-reghdfe `var1' `Xv`v'' `Xe1' if ISIC==38, absorb(id) vce(cluster id)   
-outreg2 using "$pathR/tables/`var1'.xls", append
-}
-foreach v of numlist 1/3 {  // Individual manufactures
-reghdfe `var1' `Xv_`v'' `Xe1', absorb(id Year) vce(cluster id)   
-outreg2 using "$pathR/tables/`var1'.xls", append
-}
-foreach v of numlist 1/3 {  // Individual manufactures
-reghdfe `var1' `Xv`v'' `Xv_`v'' `Xe1', absorb(id Year) vce(cluster id)   
-outreg2 using "$pathR/tables/`var1'.xls", append
-}
-}
-//   //
 local i=34   // Motor vehicles, trailers, semi-trailers 
 reghdfe growth_value `Xv_1' `Xe1' if ISIC==`i', absorb(id) vce(cluster id)   
-outreg2 using "$pathR/tables/Automotive_gr.xls", replace
+outreg2 using "$pathTRaw/Table8_automotive.xls", replace
 foreach v of numlist 2/3 {  // for each water measure
 reghdfe growth_value `Xv_`v'' `Xe1' if ISIC==`i', absorb(id) vce(cluster id)   
-outreg2 using "$pathR/tables/Automotive_gr.xls", append
-}
-//     //
-
-quietly { 
-foreach v of numlist 1/3 {  // for each water measure
-reghdfe growth_value `Xv`v'' `Xe1' if ISIC==15, absorb(id) vce(cluster id)   
-outreg2 using "$pathR/tables/IIP_gr_W`v'.xls", replace
-foreach i of numlist 16/36 {  // each industry (look: Non-metallic mineral products 26, Medical, precision and optical instruments 33, Motor vehicles, trailers, semi-trailers 34)
-reghdfe growth_value `Xv`v'' `Xe1' if ISIC==`i', absorb(id) vce(cluster id)   
-outreg2 using "$pathR/tables/IIP_gr_W`v'.xls", append
-}
-}
+outreg2 using "$pathTRaw/Table8_automotive.xls", append
 }
 //   //

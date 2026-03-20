@@ -2,7 +2,7 @@ local G2 = "ysize(5.4) xsize(9.2) imargin(0 0) graphregion(color(white) margin(v
 local G4 = "ysize(10.8) xsize(9.2) imargin(0 0 0 0) graphregion(color(white) margin(vsmall))"
 local rep1 "replace"
 local rep2 "append"
-capture log close
+tempfile pricing_reference
 
 use "$pathDs/Data_WB.dta", clear
 joinby CountryName Year using "$pathDs/Aquastat_Selected.dta", unmatched(both) update
@@ -69,48 +69,48 @@ drop v20_`var' v08_`var' var0 var1
 rename GDP_gr Total_gr  
 keep if Year==2008
 
-g WSS_price = .  // Water and sanitation prices
-replace WSS_price = 0.49 if iso3=="MEX"
-replace WSS_price = 0.77 if iso3=="KOR"
-replace WSS_price = 1.23 if iso3=="PRT"
-replace WSS_price = 1.40 if iso3=="GRC"
-replace WSS_price = 1.45 if iso3=="ITA"
-replace WSS_price = 1.58 if iso3=="CAN"
-replace WSS_price = 1.85 if iso3=="JPN"
-replace WSS_price = 1.92 if iso3=="ESP"
-replace WSS_price = 1.98 if iso3=="NZL"
-replace WSS_price = 2.02 if iso3=="HUN"
-replace WSS_price = 2.12 if iso3=="POL"
-replace WSS_price = 2.43 if iso3=="CZE"
-replace WSS_price = 2.44 if iso3=="AUS"
-replace WSS_price = 3.13 if iso3=="CHE"
-replace WSS_price = 3.59 if iso3=="SWE"
-replace WSS_price = 3.74 if iso3=="FRA"
-replace WSS_price = ((65.7-5.4)/65.7)*3.82 + (5.4/65.7)*5.72 if iso3=="GBR"
-replace WSS_price = ((11.7-3.7)/11.7)*4.14 + (3.7/11.7)*3.92 if iso3=="BEL"
-replace WSS_price = 4.41 if iso3=="FIN"
-replace WSS_price = 6.70 if iso3=="DNK"
+preserve
+import delimited "$pathRef/oecd_water_pricing_2008.csv", clear
+keep if regression_weight<. & regression_total_price_usd_m3<.
+g weighted_price = regression_total_price_usd_m3*regression_weight
+collapse (sum) weighted_price regression_weight, by(iso3)
+g WSS_price = weighted_price/regression_weight
+keep iso3 WSS_price
+save "`pricing_reference'", replace
+restore
+joinby iso3 using "`pricing_reference'", unmatched(master) update
+drop _merge
+keep if WSS_price<.
 
 local k=1
 foreach var of varlist Freshwater_withdrawal_rIR FreshwaterWithdrawal_rtrwr WaterStress { 
 reg M_`var' WSS_price //, vce(rob)
-outreg2 using "$pathR/tables/Freshwater_Prices.xls", `rep`k'' 
+outreg2 using "$pathTRaw/TableA3_freshwater_prices.xls", `rep`k'' 
 local k=2
 reg M_`var' WSS_price lnGDP //reg M_`var' WSS_price GovernmentEffectiveness
-outreg2 using "$pathR/tables/Freshwater_Prices.xls", `rep`k'' 
+outreg2 using "$pathTRaw/TableA3_freshwater_prices.xls", `rep`k'' 
 }
-local k=1
-foreach var of varlist Freshwater_withdrawal_rIR FreshwaterWithdrawal_rtrwr WaterStress { 
-reg V_`var' WSS_price 
-outreg2 using "$pathR/tables/V2020_2008_Freshwater_Prices.xls", `rep`k'' 
-local k=2
-reg V_`var' WSS_price lnGDP  //reg V_`var' WSS_price GovernmentEffectiveness
-outreg2 using "$pathR/tables/V2020_2008_Freshwater_Prices.xls", `rep`k'' 
+local corrvars "Total_water_withdrawal_pc Freshwater_withdrawal_rIR FreshwaterWithdrawal_rtrwr WaterStress WSS_price"
+correlate `corrvars'
+matrix C = r(C)
+clear
+set obs 5
+gen variable = ""
+local i = 1
+foreach var of local corrvars {
+	replace variable = "`var'" in `i'
+	local ++i
 }
-log using "$pathR/tables/TableA2.smcl", replace
-*pwcorr M_* WSS_price lnGDP GovernmentEffectiveness
-*sum  Total_water_withdrawal_pc Freshwater_withdrawal_rIR FreshwaterWithdrawal_rtrwr WaterStress
-pwcorr Total_water_withdrawal_pc Freshwater_withdrawal_rIR FreshwaterWithdrawal_rtrwr WaterStress WSS_price
-*pwcorr Level_Total_water_withdrawal_pc Freshwater_withdrawal_rIR FreshwaterWithdrawal_rtrwr WaterStress WSS_price
-log close
-pwcorr V_* WSS_price lnGDP GovernmentEffectiveness
+gen Total_water_withdrawal_pc = .
+gen Freshwater_withdrawal_rIR = .
+gen FreshwaterWithdrawal_rtrwr = .
+gen WaterStress = .
+gen WSS_price = .
+forvalues i = 1/5 {
+	replace Total_water_withdrawal_pc = C[`i',1] in `i'
+	replace Freshwater_withdrawal_rIR = C[`i',2] in `i'
+	replace FreshwaterWithdrawal_rtrwr = C[`i',3] in `i'
+	replace WaterStress = C[`i',4] in `i'
+	replace WSS_price = C[`i',5] in `i'
+}
+export delimited using "$pathTRaw/TableA2_correlation.csv", replace

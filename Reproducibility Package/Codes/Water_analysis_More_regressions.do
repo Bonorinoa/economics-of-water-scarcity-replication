@@ -63,13 +63,13 @@ replace WSS_price = 6.70 if iso3=="DNK"
 
 rename GDP_gr Total_gr  
 local k=1
-foreach var of varlist AgricultureForestryFishing_rGDP Industry_rGDP Services_rGDP FoodProduction AgricultureForestryFishing_gr Manufacturing_gr Services_gr { 
+foreach var of varlist AgricultureForestryFishing_rGDP Industry_rGDP Services_rGDP { 
 reghdfe `var' `Xv1' `Xe1', absorb(id Year) vce(cluster id)   
-outreg2 using "$pathR/tables/Agr_Ind_Services_gr.xls", `rep`k'' 
+outreg2 using "$pathTRaw/Table7_sector_shares.xls", `rep`k'' 
 local k=2
 foreach v of numlist 2/3 {  // 2/6
 reghdfe `var' `Xv`v'' `Xe1', absorb(id Year) vce(cluster id)   
-outreg2 using "$pathR/tables/Agr_Ind_Services_gr.xls", `rep`k'' 
+outreg2 using "$pathTRaw/Table7_sector_shares.xls", `rep`k'' 
 }
 }
 //     //

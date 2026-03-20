@@ -9,5 +9,5 @@ def build_stage() -> StageDefinition:
         stata_script="Regressions_eletricity.do",
         description="Estimate the hydroelectricity and power-loss regressions.",
         dependencies=("format_aquastat", "format_pwt", "format_wb", "format_wb2"),
-        expected_outputs=("tables/Electricity.xls",),
+        expected_outputs=("tables/TableA7.tex",),
     )
