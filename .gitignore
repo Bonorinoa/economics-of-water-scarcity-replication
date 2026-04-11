@@ -1,6 +1,7 @@
 # macOS and editor noise
 .DS_Store
 .vscode/*.log
+.vscode/settings.json
 
 # Python caches and local environments
 __pycache__/
@@ -9,15 +10,21 @@ __pycache__/
 .venv/
 venv/
 *.egg-info/
+*.ipynb_checkpoints/
 
 # Python general
 /python_replication/
+*.py
+pyproject.toml
 
 # Runtime logs and temporary reports
 *.log
 *.gph
 *.aux
 *.toc
+*.out
+*.lof
+*.lot
 *.synctex.gz
 parity_report.json
 parity_report.md
@@ -47,3 +54,43 @@ tmp/
 !/Reproducibility Package/Outputs/tables/raw/.gitkeep
 !/Reproducibility Package/Outputs/StataData_other/
 !/Reproducibility Package/Outputs/StataData_other/.gitkeep
+
+# Extension module: keep code, references, paper source, and reviewer-facing artifacts
+/Reproducibility Package/Extension/**
+!/Reproducibility Package/Extension/
+!/Reproducibility Package/Extension/README.md
+!/Reproducibility Package/Extension/Reference/
+!/Reproducibility Package/Extension/Reference/**
+!/Reproducibility Package/Extension/code/
+!/Reproducibility Package/Extension/code/*.do
+!/Reproducibility Package/Extension/figures/
+!/Reproducibility Package/Extension/figures/*.png
+!/Reproducibility Package/Extension/figures/*.pdf
+!/Reproducibility Package/Extension/tables/
+!/Reproducibility Package/Extension/tables/*.tex
+!/Reproducibility Package/Extension/paper/
+!/Reproducibility Package/Extension/paper/draft.tex
+!/Reproducibility Package/Extension/paper/OVERLEAF_UPLOAD.md
+
+# Extension local-only artifacts
+/Reproducibility Package/Extension/AGENT_INSTRUCTIONS.md
+/Reproducibility Package/Extension/AUDIT_CHECKLIST.md
+/Reproducibility Package/Extension/data/**
+/Reproducibility Package/Extension/results/**
+/Reproducibility Package/Extension/logs/**
+/Reproducibility Package/Extension/paper/*.pdf
+/Reproducibility Package/Extension/paper/*.aux
+/Reproducibility Package/Extension/paper/*.log
+/Reproducibility Package/Extension/paper/*.out
+/Reproducibility Package/Extension/paper/*.toc
+/Reproducibility Package/Extension/paper/*.lof
+/Reproducibility Package/Extension/paper/*.lot
+
+# Local one-off files
+/replication_data.dta
+/data_hash_report.csv
+/benchmark_country_names.log
+/run_format_aquastat.log
+/stata_smoke.log
+/ext_*.log
+/graph*.gph
