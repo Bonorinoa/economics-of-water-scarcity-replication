@@ -28,7 +28,7 @@ After that, these folders should contain the raw inputs:
 - `Reproducibility Package/Data/Excel`
 - `Reproducibility Package/Data/Stata`
 
-From the repository root, open Stata 19 and run:
+From the repository root, open Stata (I have StataSE 19) and run:
 
 ```stata
 do "run_paper_replication_mac.do"
