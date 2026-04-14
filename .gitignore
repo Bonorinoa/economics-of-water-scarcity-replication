@@ -69,14 +69,13 @@ tmp/
 !/Reproducibility Package/Extension/tables/
 !/Reproducibility Package/Extension/tables/*.tex
 !/Reproducibility Package/Extension/paper/
-!/Reproducibility Package/Extension/paper/draft.tex
-!/Reproducibility Package/Extension/paper/OVERLEAF_UPLOAD.md
+!/Reproducibility Package/Extension/paper/**
 
 # Extension local-only artifacts
 /Reproducibility Package/Extension/AGENT_INSTRUCTIONS.md
 /Reproducibility Package/Extension/AUDIT_CHECKLIST.md
 /Reproducibility Package/Extension/data/**
-/Reproducibility Package/Extension/results/**
+/Reproducibility Package/Extension/results/raw/**
 /Reproducibility Package/Extension/logs/**
 /Reproducibility Package/Extension/paper/*.pdf
 /Reproducibility Package/Extension/paper/*.aux
@@ -85,6 +84,9 @@ tmp/
 /Reproducibility Package/Extension/paper/*.toc
 /Reproducibility Package/Extension/paper/*.lof
 /Reproducibility Package/Extension/paper/*.lot
+/Reproducibility Package/Extension/paper/*.nav
+/Reproducibility Package/Extension/paper/*.snm
+/Reproducibility Package/Extension/paper/.DS_Store
 
 # Local one-off files
 /replication_data.dta

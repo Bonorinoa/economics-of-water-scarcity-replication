@@ -1,0 +1,27 @@
+\begin{table}[htbp]
+\centering
+\caption{AME-based meta-regression of water scarcity estimates}
+\label{tab:meta_ame}
+\small
+\begin{tabular}{lcc}
+\hline
+Variable & Coefficient & Robust SE \\\\
+\hline
+Constant & -0.0793 & 0.0138 \\\\
+Quadratic form & -0.0939 & 0.0152 \\\\
+Scarcity x log GDP per capita & -0.0396 & 0.0102 \\\\
+Scarcity x log water use & 0.0093 & 0.0125 \\\\
+Threshold form & -0.1102 & 0.0182 \\\\
+Internal scarcity measure & 0.0269 & 0.0103 \\\\
+Renewable scarcity measure & -0.0368 & 0.0122 \\\\
+No year fixed effects & -0.0675 & 0.0155 \\\\
+Random effects & 0.1221 & 0.0157 \\\\
+Between estimator & 0.2015 & 0.0185 \\\\
+First differences & -0.0011 & 0.0259 \\\\
+Quantile 0.25 & -0.0277 & 0.0200 \\\\
+Quantile 0.50 & 0.0073 & 0.0161 \\\\
+Quantile 0.75 & 0.0354 & 0.0152 \\\\
+\hline
+\multicolumn{3}{p{0.9\textwidth}}{\footnotesize Notes: OLS meta-regression with heteroskedasticity-robust standard errors. The dependent variable is the specification-level average marginal effect (AME) of water scarcity on GDP growth. The omitted categories are the linear functional form, the available-freshwater scarcity measure, and the two-way fixed-effects estimator. The no-year-fixed-effects dummy captures the country-FE-only shift relative to the two-way FE baseline, while the between and quantile coefficients are incremental deviations on top of that no-year-FE penalty.}
+\end{tabular}
+\end{table}

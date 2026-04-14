@@ -9,20 +9,20 @@ ext_display_step "Writing the paper draft and summary table"
 use "$EXT_RESULTS/meta_analysis_results.dta", clear
 keep if status == "success"
 
-quietly summarize beta_scarcity, detail
+quietly summarize ame_scarcity, detail
 local n_success = r(N)
 local mean_beta : display %6.3f r(mean)
 local median_beta : display %6.3f r(p50)
 local p25_beta : display %6.3f r(p25)
 local p75_beta : display %6.3f r(p75)
 
-quietly count if beta_scarcity < 0
+quietly count if ame_scarcity < 0
 local share_negative : display %5.1f 100 * r(N) / `n_success'
 
-quietly count if p_value < 0.05
+quietly count if ame_p_value < 0.05
 local share_sig05 : display %5.1f 100 * r(N) / `n_success'
 
-use "$EXT_RESULTS_RAW/meta_regression_coefficients.dta", clear
+use "$EXT_RESULTS_RAW/meta_regression_coefficients_ame.dta", clear
 
 quietly summarize coef if term == "d_quadratic", meanonly
 local b_quad : display %6.3f r(mean)
@@ -39,15 +39,15 @@ local b_thr : display %6.3f r(mean)
 quietly summarize p_value if term == "d_threshold", meanonly
 local p_thr : display %6.3f r(mean)
 
-quietly summarize coef if term == "d_country_fe_only", meanonly
-local b_cfe : display %6.3f r(mean)
-quietly summarize p_value if term == "d_country_fe_only", meanonly
-local p_cfe : display %6.3f r(mean)
-
 quietly summarize coef if term == "d_re", meanonly
 local b_re : display %6.3f r(mean)
 quietly summarize p_value if term == "d_re", meanonly
 local p_re : display %6.3f r(mean)
+
+quietly summarize coef if term == "d_no_year_fe", meanonly
+local b_noyear : display %6.3f r(mean)
+quietly summarize p_value if term == "d_no_year_fe", meanonly
+local p_noyear : display %6.3f r(mean)
 
 quietly summarize coef if term == "d_between", meanonly
 local b_bet : display %6.3f r(mean)
@@ -84,7 +84,7 @@ foreach scalar_label in ///
 	mean_beta median_beta p25_beta p75_beta ///
 	share_negative share_sig05 ///
 	b_quad p_quad b_inc p_inc b_thr p_thr ///
-	b_cfe p_cfe b_re p_re b_bet p_bet ///
+	b_re p_re b_noyear p_noyear b_bet p_bet ///
 	b_q25 p_q25 b_q50 p_q50 b_q75 p_q75 ///
 	baseline_beta baseline_se baseline_n baseline_r2 {
 	local `scalar_label' = trim("``scalar_label''")
@@ -94,7 +94,7 @@ capture file close dist_tex
 file open dist_tex using "$EXT_TABLES/estimate_distribution.tex", write replace text
 file write dist_tex "\begin{table}[htbp]" _n
 file write dist_tex "\centering" _n
-file write dist_tex "\caption{Distribution of the 120 scarcity estimates}" _n
+file write dist_tex "\caption{Distribution of the 120 AME estimates}" _n
 file write dist_tex "\label{tab:dist}" _n
 file write dist_tex "\small" _n
 file write dist_tex "\begin{tabular}{lc}" _n
@@ -102,8 +102,8 @@ file write dist_tex "\hline" _n
 file write dist_tex "Statistic & Value \\\\" _n
 file write dist_tex "\hline" _n
 file write dist_tex `"Successful specifications & `n_success' \\\\"' _n
-file write dist_tex `"Mean beta & `mean_beta' \\\\"' _n
-file write dist_tex `"Median beta & `median_beta' \\\\"' _n
+file write dist_tex `"Mean AME & `mean_beta' \\\\"' _n
+file write dist_tex `"Median AME & `median_beta' \\\\"' _n
 file write dist_tex `"25th percentile & `p25_beta' \\\\"' _n
 file write dist_tex `"75th percentile & `p75_beta' \\\\"' _n
 file write dist_tex `"Share negative (\%) & `share_negative' \\\\"' _n
@@ -156,7 +156,7 @@ file write draft_tex "\]" _n
 file write draft_tex "where the omitted categories are the linear form, the available-freshwater scarcity measure, and the two-way fixed-effects estimator." _n
 
 file write draft_tex "\section{Analysis Results}" _n
-file write draft_tex `"All 120 planned specifications converged, so the internal meta-analysis covers the complete design space. Table~\ref{tab:dist} reports the distribution of the resulting scarcity coefficients, and Table~\ref{tab:meta} reports the meta-regression coefficients. The average estimate is `mean_beta', the median is `median_beta', the interquartile range runs from `p25_beta' to `p75_beta', `share_negative'\% of the estimates are negative, and `share_sig05'\% are statistically significant at the 5\% level. These moments already suggest that the sign of the relationship is usually stable even when the magnitude is not."' _n
+file write draft_tex `"All 120 planned specifications converged, so the internal meta-analysis covers the complete design space. Table~\ref{tab:dist} reports the distribution of the resulting scarcity coefficients, and Table~\ref{tab:meta_ame} reports the AME-based meta-regression coefficients. The average estimate is `mean_beta', the median is `median_beta', the interquartile range runs from `p25_beta' to `p75_beta', `share_negative'\% of the estimates are negative, and `share_sig05'\% are statistically significant at the 5\% level. These moments already suggest that the sign of the relationship is usually stable even when the magnitude is not."' _n
 file write draft_tex "\begin{figure}[H]" _n
 file write draft_tex "\centering" _n
 file write draft_tex "\includegraphics[width=\textwidth]{../figures/specification_curve.png}" _n
@@ -164,11 +164,18 @@ file write draft_tex "\caption{Specification curve for the 120 water scarcity es
 file write draft_tex "\label{fig:spec_curve}" _n
 file write draft_tex "\end{figure}" _n
 file write draft_tex "\input{../tables/estimate_distribution.tex}" _n
-file write draft_tex "\input{../tables/meta_regression.tex}" _n
+file write draft_tex "\input{../tables/meta_regression_ame.tex}" _n
 file write draft_tex "Figure~\ref{fig:spec_curve} shows that the authors' baseline estimate lies in the middle of a much wider but still mostly negative distribution. The meta-regression indicates that several modeling choices systematically shift the estimate away from the baseline." _n
 file write draft_tex `"Relative to the two-way fixed-effects linear baseline, the quadratic specification lowers the coefficient by `b_quad' (p=`p_quad'), the income interaction lowers it by `b_inc' (p=`p_inc'), and the threshold model lowers it by `b_thr' (p=`p_thr'). These are economically meaningful changes: each one makes the scarcity effect substantially more negative."' _n
-file write draft_tex `"Estimator choice also matters. Dropping year fixed effects makes the coefficient `b_cfe' more negative on average (p=`p_cfe'), while random-effects and between estimators shift the coefficient upward by `b_re' (p=`p_re') and `b_bet' (p=`p_bet'), respectively. This pattern is consistent with the idea that the within-country signal is more negative than the between-country correlation."' _n
+file write draft_tex `"Estimator choice also matters. In the AME meta-regression, the no-year-FE dummy is negative (`b_noyear', p=`p_noyear'), which means that the country-FE-only specification is more negative than the two-way fixed-effects baseline once the functional-form and scarcity-measure controls are held fixed. Random-effects and between estimators then shift the coefficient upward by `b_re' (p=`p_re') and `b_bet' (p=`p_bet') relative to their own reference cells. This pattern is consistent with the idea that the within-country signal is more negative than the between-country correlation, while models that omit year effects inherit an additional negative shift."' _n
 file write draft_tex `"The quantile results reinforce the paper's tail-risk interpretation. The Q25 and Q50 coefficients are `b_q25' and `b_q50' below the baseline meta-regression constant, while the Q75 shift is `b_q75' (p=`p_q75'). Lower-tail growth episodes therefore appear especially sensitive to water scarcity."' _n
+file write draft_tex "\begin{figure}[H]" _n
+file write draft_tex "\centering" _n
+file write draft_tex "\includegraphics[width=0.85\textwidth]{../figures/marginal_effect_income.png}" _n
+file write draft_tex "\caption{Marginal effect of water scarcity across income levels}" _n
+file write draft_tex "\label{fig:marginal_income}" _n
+file write draft_tex "\end{figure}" _n
+file write draft_tex "Figure~\ref{fig:marginal_income} visualizes the two-way fixed-effects income-interaction specification for the available-freshwater measure. The point estimate becomes less negative as income rises, which is consistent with the idea that richer economies can partially buffer water constraints through infrastructure, technology, or sectoral composition. The confidence band approaches zero only near the upper end of the income distribution, so the attenuation is economically meaningful even though the sign does not reverse over most of the observed support." _n
 file write draft_tex "\begin{figure}[H]" _n
 file write draft_tex "\centering" _n
 file write draft_tex "\includegraphics[width=0.9\textwidth]{../figures/shadow_price_proxy.png}" _n

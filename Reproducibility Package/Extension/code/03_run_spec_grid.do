@@ -10,7 +10,7 @@ capture program drop ext_prepare_level_vars
 program define ext_prepare_level_vars
 	syntax, scarcity(string) form(string)
 
-	tempvar scarcity_var threshold_dummy scarcity_sq scarcity_x_income scarcity_x_use scarcity_x_threshold
+	tempvar scarcity_var
 	gen double `scarcity_var' = .
 	if "`scarcity'" == "internal" {
 		replace `scarcity_var' = Freshwater_withdrawal_rIR_p99
@@ -55,6 +55,89 @@ program define ext_prepare_level_vars
 	}
 end
 
+capture program drop ext_compute_ame
+program define ext_compute_ame, rclass
+	syntax, form(string) maincoef(string) [aux1coef(string) aux2coef(string)]
+
+	tempvar regression_sample
+	gen byte `regression_sample' = e(sample)
+
+	local ame = _b[`maincoef']
+	local ame_se = _se[`maincoef']
+	local ame_t = .
+	local ame_p = .
+
+	capture scalar __ext_df = e(df_r)
+	if !_rc & __ext_df < . {
+		local ame_t = `ame' / `ame_se'
+		local ame_p = 2 * ttail(__ext_df, abs(`ame_t'))
+	}
+	else {
+		local ame_t = `ame' / `ame_se'
+		local ame_p = 2 * normal(-abs(`ame_t'))
+	}
+	capture scalar drop __ext_df
+
+	if "`form'" == "quadratic" {
+		quietly summarize rhs_scarcity if `regression_sample', meanonly
+		local scarcity_mean = r(mean)
+		capture quietly lincom _b[`maincoef'] + (2 * `scarcity_mean') * _b[`aux1coef']
+		if _rc {
+			return scalar failed = 1
+			exit
+		}
+		local ame = r(estimate)
+		local ame_se = r(se)
+		local ame_t = `ame' / `ame_se'
+		local ame_p = r(p)
+	}
+	else if "`form'" == "interaction_income" {
+		quietly summarize rhs_income if `regression_sample', meanonly
+		local income_mean = r(mean)
+		capture quietly lincom _b[`maincoef'] + (`income_mean') * _b[`aux1coef']
+		if _rc {
+			return scalar failed = 1
+			exit
+		}
+		local ame = r(estimate)
+		local ame_se = r(se)
+		local ame_t = `ame' / `ame_se'
+		local ame_p = r(p)
+	}
+	else if "`form'" == "interaction_use" {
+		quietly summarize rhs_use if `regression_sample', meanonly
+		local use_mean = r(mean)
+		capture quietly lincom _b[`maincoef'] + (`use_mean') * _b[`aux1coef']
+		if _rc {
+			return scalar failed = 1
+			exit
+		}
+		local ame = r(estimate)
+		local ame_se = r(se)
+		local ame_t = `ame' / `ame_se'
+		local ame_p = r(p)
+	}
+	else if "`form'" == "threshold" {
+		quietly summarize rhs_aux1 if `regression_sample', meanonly
+		local share_above = r(mean)
+		capture quietly lincom _b[`maincoef'] + (`share_above') * _b[`aux2coef']
+		if _rc {
+			return scalar failed = 1
+			exit
+		}
+		local ame = r(estimate)
+		local ame_se = r(se)
+		local ame_t = `ame' / `ame_se'
+		local ame_p = r(p)
+	}
+
+	return scalar failed = 0
+	return scalar ame = `ame'
+	return scalar ame_se = `ame_se'
+	return scalar ame_t = `ame_t'
+	return scalar ame_p = `ame_p'
+end
+
 capture program drop ext_post_failure
 program define ext_post_failure
 	args postname specid scarcity form estimator reason
@@ -72,12 +155,18 @@ program define ext_post_failure
 	local d_q25 = ("`estimator'" == "q25")
 	local d_q50 = ("`estimator'" == "q50")
 	local d_q75 = ("`estimator'" == "q75")
+	local d_no_year_fe = inlist("`estimator'", "country_fe_only", "between", "q25", "q50", "q75")
 
 	post `postname' ///
 		(`specid') ///
 		("`scarcity'") ///
 		("`form'") ///
 		("`estimator'") ///
+		(.) ///
+		(.) ///
+		(.) ///
+		(.) ///
+		(.) ///
 		(.) ///
 		(.) ///
 		(.) ///
@@ -98,13 +187,14 @@ program define ext_post_failure
 		(`d_q25') ///
 		(`d_q50') ///
 		(`d_q75') ///
+		(`d_no_year_fe') ///
 		("failed") ///
 		(`"`reason'"')
 end
 
 capture program drop ext_post_success
 program define ext_post_success
-	args postname specid scarcity form estimator beta se tstat pvalue nobs rsq hausmanp
+	args postname specid scarcity form estimator beta se tstat pvalue nobs rsq hausmanp ame amese amet amep withinrsq overallrsq
 
 	local d_internal = ("`scarcity'" == "internal")
 	local d_renewable = ("`scarcity'" == "renewable")
@@ -119,6 +209,7 @@ program define ext_post_success
 	local d_q25 = ("`estimator'" == "q25")
 	local d_q50 = ("`estimator'" == "q50")
 	local d_q75 = ("`estimator'" == "q75")
+	local d_no_year_fe = inlist("`estimator'", "country_fe_only", "between", "q25", "q50", "q75")
 
 	post `postname' ///
 		(`specid') ///
@@ -132,6 +223,12 @@ program define ext_post_success
 		(`nobs') ///
 		(`rsq') ///
 		(`hausmanp') ///
+		(`ame') ///
+		(`amese') ///
+		(`amet') ///
+		(`amep') ///
+		(`withinrsq') ///
+		(`overallrsq') ///
 		(`d_quadratic') ///
 		(`d_interaction_income') ///
 		(`d_interaction_use') ///
@@ -145,6 +242,7 @@ program define ext_post_success
 		(`d_q25') ///
 		(`d_q50') ///
 		(`d_q75') ///
+		(`d_no_year_fe') ///
 		("success") ///
 		("")
 end
@@ -158,9 +256,10 @@ postfile `metapost' ///
 	str20 functional_form ///
 	str18 estimator ///
 	double beta_scarcity se_scarcity t_stat p_value n_obs r_squared hausman_p ///
+	double ame_scarcity ame_se ame_t_stat ame_p_value within_r2 overall_r2 ///
 	byte d_quadratic d_interaction_income d_interaction_use d_threshold ///
 		d_internal d_renewable ///
-		d_country_fe_only d_re d_between d_first_diff d_q25 d_q50 d_q75 ///
+		d_country_fe_only d_re d_between d_first_diff d_q25 d_q50 d_q75 d_no_year_fe ///
 	str8 status ///
 	str244 failure_reason ///
 	using "`meta_results'", replace
@@ -183,14 +282,19 @@ foreach scarcity in `scarcity_list' {
 			preserve
 				quietly ext_prepare_level_vars, scarcity(`scarcity') form(`form')
 				local rhs_vars "rhs_scarcity rhs_use rhs_income"
+				local ame_aux1 = ""
+				local ame_aux2 = ""
 				if "`form'" == "quadratic" {
 					local rhs_vars "`rhs_vars' rhs_aux1"
+					local ame_aux1 "rhs_aux1"
 				}
 				else if inlist("`form'", "interaction_income", "interaction_use") {
 					local rhs_vars "`rhs_vars' rhs_aux1"
+					local ame_aux1 "rhs_aux1"
 				}
 				else if "`form'" == "threshold" {
 					local rhs_vars "`rhs_vars' rhs_aux1 rhs_aux2"
+					local ame_aux2 "rhs_aux2"
 				}
 
 				if inlist("`estimator'", "country_fe_only", "two_way_fe", "random_effects", "q25", "q50", "q75") {
@@ -202,6 +306,19 @@ foreach scarcity in `scarcity_list' {
 						keep if !missing(rhs_aux1, rhs_aux2)
 					}
 				}
+
+				local beta = .
+				local se = .
+				local tstat = .
+				local pvalue = .
+				local rsq = .
+				local hausman_p = .
+				local ame = .
+				local ame_se = .
+				local ame_t = .
+				local ame_p = .
+				local within_r2 = .
+				local overall_r2 = .
 
 				if "`estimator'" == "country_fe_only" {
 					capture noisily reghdfe Total_gr `rhs_vars', absorb(id) vce(cluster id)
@@ -215,8 +332,22 @@ foreach scarcity in `scarcity_list' {
 					local tstat = `beta' / `se'
 					local pvalue = 2 * ttail(e(df_r), abs(`tstat'))
 					local rsq = e(r2)
+					local overall_r2 = e(r2)
+					capture scalar __ext_within = e(r2_within)
+					if !_rc local within_r2 = __ext_within
+					capture scalar drop __ext_within
 					local nobs = e(N)
-					ext_post_success `metapost' `spec_id' "`scarcity'" "`form'" "`estimator'" `beta' `se' `tstat' `pvalue' `nobs' `rsq' .
+					quietly ext_compute_ame, form(`form') maincoef(rhs_scarcity) aux1coef(`ame_aux1') aux2coef(`ame_aux2')
+					if r(failed) {
+						ext_post_failure `metapost' `spec_id' "`scarcity'" "`form'" "`estimator'" "AME computation failed"
+						restore
+						continue
+					}
+					local ame = r(ame)
+					local ame_se = r(ame_se)
+					local ame_t = r(ame_t)
+					local ame_p = r(ame_p)
+					ext_post_success `metapost' `spec_id' "`scarcity'" "`form'" "`estimator'" `beta' `se' `tstat' `pvalue' `nobs' `rsq' . `ame' `ame_se' `ame_t' `ame_p' `within_r2' `overall_r2'
 				}
 				else if "`estimator'" == "two_way_fe" {
 					capture noisily reghdfe Total_gr `rhs_vars', absorb(id Year) vce(cluster id)
@@ -230,8 +361,22 @@ foreach scarcity in `scarcity_list' {
 					local tstat = `beta' / `se'
 					local pvalue = 2 * ttail(e(df_r), abs(`tstat'))
 					local rsq = e(r2)
+					local overall_r2 = e(r2)
+					capture scalar __ext_within = e(r2_within)
+					if !_rc local within_r2 = __ext_within
+					capture scalar drop __ext_within
 					local nobs = e(N)
-					ext_post_success `metapost' `spec_id' "`scarcity'" "`form'" "`estimator'" `beta' `se' `tstat' `pvalue' `nobs' `rsq' .
+					quietly ext_compute_ame, form(`form') maincoef(rhs_scarcity) aux1coef(`ame_aux1') aux2coef(`ame_aux2')
+					if r(failed) {
+						ext_post_failure `metapost' `spec_id' "`scarcity'" "`form'" "`estimator'" "AME computation failed"
+						restore
+						continue
+					}
+					local ame = r(ame)
+					local ame_se = r(ame_se)
+					local ame_t = r(ame_t)
+					local ame_p = r(ame_p)
+					ext_post_success `metapost' `spec_id' "`scarcity'" "`form'" "`estimator'" `beta' `se' `tstat' `pvalue' `nobs' `rsq' . `ame' `ame_se' `ame_t' `ame_p' `within_r2' `overall_r2'
 				}
 				else if "`estimator'" == "random_effects" {
 					capture noisily xtreg Total_gr `rhs_vars' i.Year, re vce(cluster id)
@@ -242,14 +387,17 @@ foreach scarcity in `scarcity_list' {
 					}
 					local beta = _b[rhs_scarcity]
 					local se = _se[rhs_scarcity]
-					local zstat = `beta' / `se'
-					local pvalue = 2 * normal(-abs(`zstat'))
+					local tstat = `beta' / `se'
+					local pvalue = 2 * normal(-abs(`tstat'))
 					local rsq = e(r2_o)
+					local overall_r2 = e(r2_o)
+					capture scalar __ext_within = e(r2_w)
+					if !_rc local within_r2 = __ext_within
+					capture scalar drop __ext_within
 					local nobs = e(N)
 
 					tempvar re_sample
 					gen byte `re_sample' = e(sample)
-					tempname b_fe V_fe b_re V_re
 					local hausman_p = .
 					quietly xtreg Total_gr `rhs_vars' i.Year if `re_sample', fe
 					estimates store ext_fe_h
@@ -262,10 +410,21 @@ foreach scarcity in `scarcity_list' {
 					estimates drop ext_fe_h
 					estimates drop ext_re_h
 
-					ext_post_success `metapost' `spec_id' "`scarcity'" "`form'" "`estimator'" `beta' `se' `zstat' `pvalue' `nobs' `rsq' `hausman_p'
+					quietly xtreg Total_gr `rhs_vars' i.Year if `re_sample', re vce(cluster id)
+					quietly ext_compute_ame, form(`form') maincoef(rhs_scarcity) aux1coef(`ame_aux1') aux2coef(`ame_aux2')
+					if r(failed) {
+						ext_post_failure `metapost' `spec_id' "`scarcity'" "`form'" "`estimator'" "AME computation failed"
+						restore
+						continue
+					}
+					local ame = r(ame)
+					local ame_se = r(ame_se)
+					local ame_t = r(ame_t)
+					local ame_p = r(ame_p)
+					ext_post_success `metapost' `spec_id' "`scarcity'" "`form'" "`estimator'" `beta' `se' `tstat' `pvalue' `nobs' `rsq' `hausman_p' `ame' `ame_se' `ame_t' `ame_p' `within_r2' `overall_r2'
 				}
 				else if "`estimator'" == "between" {
-					collapse (mean) Total_gr `rhs_vars', by(id iso3 CountryName)
+					collapse (mean) Total_gr rhs_scarcity rhs_use rhs_income rhs_aux1 rhs_aux2, by(id iso3 CountryName)
 					capture noisily regress Total_gr `rhs_vars', vce(robust)
 					if _rc {
 						ext_post_failure `metapost' `spec_id' "`scarcity'" "`form'" "`estimator'" "between regression failed"
@@ -277,8 +436,19 @@ foreach scarcity in `scarcity_list' {
 					local tstat = `beta' / `se'
 					local pvalue = 2 * ttail(e(df_r), abs(`tstat'))
 					local rsq = e(r2)
+					local overall_r2 = e(r2)
 					local nobs = e(N)
-					ext_post_success `metapost' `spec_id' "`scarcity'" "`form'" "`estimator'" `beta' `se' `tstat' `pvalue' `nobs' `rsq' .
+					quietly ext_compute_ame, form(`form') maincoef(rhs_scarcity) aux1coef(`ame_aux1') aux2coef(`ame_aux2')
+					if r(failed) {
+						ext_post_failure `metapost' `spec_id' "`scarcity'" "`form'" "`estimator'" "AME computation failed"
+						restore
+						continue
+					}
+					local ame = r(ame)
+					local ame_se = r(ame_se)
+					local ame_t = r(ame_t)
+					local ame_p = r(ame_p)
+					ext_post_success `metapost' `spec_id' "`scarcity'" "`form'" "`estimator'" `beta' `se' `tstat' `pvalue' `nobs' `rsq' . `ame' `ame_se' `ame_t' `ame_p' . `overall_r2'
 				}
 				else if "`estimator'" == "first_diff" {
 					sort id Year
@@ -290,13 +460,18 @@ foreach scarcity in `scarcity_list' {
 					}
 					keep if !missing(D_Total_gr, D_rhs_scarcity, D_rhs_use, D_rhs_income)
 					local fd_rhs "D_rhs_scarcity D_rhs_use D_rhs_income"
+					local ame_maincoef "D_rhs_scarcity"
+					local ame_aux1_fd = ""
+					local ame_aux2_fd = ""
 					if inlist("`form'", "quadratic", "interaction_income", "interaction_use") {
 						keep if !missing(D_rhs_aux1)
 						local fd_rhs "`fd_rhs' D_rhs_aux1"
+						local ame_aux1_fd "D_rhs_aux1"
 					}
 					if "`form'" == "threshold" {
 						keep if !missing(D_rhs_aux1, D_rhs_aux2)
 						local fd_rhs "`fd_rhs' D_rhs_aux1 D_rhs_aux2"
+						local ame_aux2_fd "D_rhs_aux2"
 					}
 					capture noisily regress D_Total_gr `fd_rhs' i.Year, vce(cluster id)
 					if _rc {
@@ -309,8 +484,19 @@ foreach scarcity in `scarcity_list' {
 					local tstat = `beta' / `se'
 					local pvalue = 2 * ttail(e(df_r), abs(`tstat'))
 					local rsq = e(r2)
+					local overall_r2 = e(r2)
 					local nobs = e(N)
-					ext_post_success `metapost' `spec_id' "`scarcity'" "`form'" "`estimator'" `beta' `se' `tstat' `pvalue' `nobs' `rsq' .
+					quietly ext_compute_ame, form(`form') maincoef(`ame_maincoef') aux1coef(`ame_aux1_fd') aux2coef(`ame_aux2_fd')
+					if r(failed) {
+						ext_post_failure `metapost' `spec_id' "`scarcity'" "`form'" "`estimator'" "AME computation failed"
+						restore
+						continue
+					}
+					local ame = r(ame)
+					local ame_se = r(ame_se)
+					local ame_t = r(ame_t)
+					local ame_p = r(ame_p)
+					ext_post_success `metapost' `spec_id' "`scarcity'" "`form'" "`estimator'" `beta' `se' `tstat' `pvalue' `nobs' `rsq' . `ame' `ame_se' `ame_t' `ame_p' . `overall_r2'
 				}
 				else if inlist("`estimator'", "q25", "q50", "q75") {
 					local tau = 0.25
@@ -324,13 +510,28 @@ foreach scarcity in `scarcity_list' {
 					}
 					local beta = _b[rhs_scarcity]
 					local se = _se[rhs_scarcity]
-					local zstat = `beta' / `se'
-					local pvalue = 2 * normal(-abs(`zstat'))
+					local tstat = `beta' / `se'
+					local pvalue = 2 * normal(-abs(`tstat'))
 					local nobs = e(N)
 					local rsq = .
-					capture scalar rsq_candidate = e(r2)
-					if !_rc local rsq = rsq_candidate
-					ext_post_success `metapost' `spec_id' "`scarcity'" "`form'" "`estimator'" `beta' `se' `zstat' `pvalue' `nobs' `rsq' .
+					local overall_r2 = .
+					capture scalar __ext_overall = e(r2)
+					if !_rc {
+						local rsq = __ext_overall
+						local overall_r2 = __ext_overall
+					}
+					capture scalar drop __ext_overall
+					quietly ext_compute_ame, form(`form') maincoef(rhs_scarcity) aux1coef(`ame_aux1') aux2coef(`ame_aux2')
+					if r(failed) {
+						ext_post_failure `metapost' `spec_id' "`scarcity'" "`form'" "`estimator'" "AME computation failed"
+						restore
+						continue
+					}
+					local ame = r(ame)
+					local ame_se = r(ame_se)
+					local ame_t = r(ame_t)
+					local ame_p = r(ame_p)
+					ext_post_success `metapost' `spec_id' "`scarcity'" "`form'" "`estimator'" `beta' `se' `tstat' `pvalue' `nobs' `rsq' . `ame' `ame_se' `ame_t' `ame_p' . `overall_r2'
 				}
 				else {
 					ext_post_failure `metapost' `spec_id' "`scarcity'" "`form'" "`estimator'" "unsupported estimator"
@@ -348,6 +549,13 @@ label var spec_id "Specification id"
 label var beta_scarcity "Coefficient on scarcity variable"
 label var se_scarcity "Standard error on scarcity variable"
 label var hausman_p "Hausman p-value"
+label var ame_scarcity "Average marginal effect of scarcity"
+label var ame_se "Standard error of average marginal effect"
+label var ame_t_stat "t or z statistic for AME"
+label var ame_p_value "p-value for AME"
+label var within_r2 "Within R-squared when available"
+label var overall_r2 "Overall R-squared when available"
+label var d_no_year_fe "Estimator omits year fixed effects"
 
 duplicates tag spec_id, gen(spec_dup)
 count if spec_dup > 0
@@ -355,6 +563,16 @@ if r(N) > 0 {
 	ext_abort "duplicate specification identifiers were generated"
 }
 drop spec_dup
+
+quietly count if functional_form == "linear" & status == "success" & abs(ame_scarcity - beta_scarcity) > 1e-10
+if r(N) > 0 {
+	ext_abort "linear AMEs do not match the raw scarcity coefficients"
+}
+
+quietly count if status == "success" & missing(ame_scarcity, ame_se, ame_t_stat, ame_p_value)
+if r(N) > 0 {
+	ext_abort "some successful specifications are missing AME outputs"
+}
 
 save "$EXT_RESULTS/meta_analysis_results.dta", replace
 export delimited using "$EXT_RESULTS/meta_analysis_results.csv", replace
