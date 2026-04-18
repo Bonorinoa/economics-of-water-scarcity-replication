@@ -40,7 +40,7 @@ local common_top ///
 	plotregion(color(white)) ///
 	xscale(range(1 120)) ///
 	xlabel(1(10)120, labsize(small)) ///
-	ylabel(-0.4(0.1)0.1, angle(0) labsize(small)) ///
+	ylabel(-0.4(0.2)0, angle(0) labsize(vsmall)) ///
 	yscale(range(-0.45 0.15)) ///
 	ytitle("Average marginal effect") ///
 	xtitle("Specification rank (sorted by AME)") ///
