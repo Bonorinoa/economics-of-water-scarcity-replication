@@ -56,9 +56,9 @@ file write meta_tex "\caption{AME-based meta-regression of water scarcity estima
 file write meta_tex "\label{tab:meta_ame}" _n
 file write meta_tex "\small" _n
 file write meta_tex "\begin{tabular}{lcc}" _n
-file write meta_tex "\hline" _n
+file write meta_tex "\toprule" _n
 file write meta_tex "Variable & Coefficient & Robust SE \\\\" _n
-file write meta_tex "\hline" _n
+file write meta_tex "\midrule" _n
 forvalues i = 1/`=_N' {
 	local label = term[`i']
 	if "`label'" == "_cons" local label "Constant"
@@ -77,7 +77,7 @@ forvalues i = 1/`=_N' {
 	if "`label'" == "d_q75" local label "Quantile 0.75"
 	file write meta_tex `"`label' & `=string(coef[`i'],"%9.4f")' & `=string(se[`i'],"%9.4f")' \\\\"' _n
 }
-file write meta_tex "\hline" _n
+file write meta_tex "\bottomrule" _n
 file write meta_tex "\multicolumn{3}{p{0.9\textwidth}}{\footnotesize Notes: OLS meta-regression with heteroskedasticity-robust standard errors. The dependent variable is the specification-level average marginal effect (AME) of water scarcity on GDP growth. The omitted categories are the linear functional form, the available-freshwater scarcity measure, and the two-way fixed-effects estimator. The no-year-fixed-effects dummy captures the country-FE-only shift relative to the two-way FE baseline, while the between and quantile coefficients are incremental deviations on top of that no-year-FE penalty.}" _n
 file write meta_tex "\end{tabular}" _n
 file write meta_tex "\end{table}" _n

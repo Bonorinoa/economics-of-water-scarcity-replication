@@ -40,7 +40,9 @@ local common_top ///
 	plotregion(color(white)) ///
 	xscale(range(1 120)) ///
 	xlabel(1(10)120, labsize(small)) ///
-	ytitle("Average marginal effect of scarcity") ///
+	ylabel(-0.4(0.1)0.1, angle(0) labsize(small)) ///
+	yscale(range(-0.45 0.15)) ///
+	ytitle("Average marginal effect") ///
 	xtitle("Specification rank (sorted by AME)") ///
 	yline(`=baseline_beta', lpattern(dash) lcolor(black)) ///
 	xline(`baseline_rank', lpattern(shortdash) lcolor(gs8))
@@ -55,10 +57,11 @@ twoway ///
 	(scatter ame_scarcity spec_order if estimator == "q25", msymbol(circle_hollow) msize(vsmall) mcolor(cranberry)) ///
 	(scatter ame_scarcity spec_order if estimator == "q50", msymbol(diamond_hollow) msize(vsmall) mcolor(purple)) ///
 	(scatter ame_scarcity spec_order if estimator == "q75", msymbol(square_hollow) msize(vsmall) mcolor(brown)), ///
-	legend(order(2 "Country FE only" 3 "Two-way FE" 4 "Random effects" 5 "Between" 6 "First diff" 7 "Q25" 8 "Q50" 9 "Q75") rows(2) size(vsmall)) ///
-	title("Specification curve for water scarcity AMEs") ///
-	subtitle("120 AME estimates with 95% confidence intervals") ///
-	xsize(11) ysize(3.8) ///
+	legend(order(2 "Country FE" 3 "Two-way FE" 4 "Random effects" 5 "Between" 6 "First diff" 7 "Q25" 8 "Q50" 9 "Q75") rows(2) size(vsmall) position(6) ring(0) region(lstyle(none))) ///
+	title("Specification curve", size(large)) ///
+	subtitle("AME estimates with 95% confidence intervals", size(medsmall)) ///
+	note("The plotting range is trimmed to improve readability; a small number of confidence intervals extend beyond the y-axis limits.", size(vsmall)) ///
+	xsize(10.5) ysize(4.2) ///
 	`common_top' ///
 	name(ext_fig_spec_curve, replace)
 
@@ -88,16 +91,16 @@ twoway ///
 	ytitle("") ///
 	xtitle("Specification rank (sorted by AME)") ///
 	xline(`baseline_rank', lpattern(shortdash) lcolor(gs8)) ///
-	title("Decision matrix") ///
-	subtitle("Filled squares mark active modeling choices") ///
+	title("Decision matrix", size(large)) ///
+	subtitle("Filled squares mark active modeling choices", size(medsmall)) ///
 	legend(off) ///
-	xsize(11) ysize(3.2) ///
+	xsize(10.5) ysize(3.2) ///
 	name(ext_fig_decision_matrix, replace)
 
 graph export "$EXT_FIGURES/fig_decision_matrix.png", width(3300) replace
 graph export "$EXT_FIGURES/fig_decision_matrix.pdf", replace
 
-graph combine ext_fig_spec_curve ext_fig_decision_matrix, rows(2) cols(1) imargin(0 0 0 0) xsize(11) ysize(7.2) name(ext_specification_curve, replace)
+graph combine ext_fig_spec_curve ext_fig_decision_matrix, rows(2) cols(1) imargin(0 0 0 0) xsize(10.5) ysize(7.8) name(ext_specification_curve, replace)
 graph export "$EXT_FIGURES/specification_curve.png", width(3300) replace
 graph export "$EXT_FIGURES/specification_curve.pdf", replace
 
@@ -218,9 +221,10 @@ twoway ///
 	yline(`=baseline_beta', lpattern(shortdash) lcolor(maroon)) ///
 	xtitle("Log GDP per capita (PPP)") ///
 	ytitle("Marginal effect of scarcity on GDP growth") ///
-	title("Marginal effect of scarcity across income levels") ///
-	subtitle("Two-way FE, available-freshwater measure, income interaction") ///
-	note("Reference points: ln GDP pc 6.91 ≈ $1,000; 9.21 ≈ $10,000; 10.82 ≈ $50,000. Dotted lines mark the 10th and 90th percentiles of the estimation sample.") ///
+	title("Marginal effect of scarcity across income levels", size(large)) ///
+	subtitle("Two-way FE, available-freshwater measure", size(medsmall)) ///
+	note("Dotted lines mark the 10th and 90th percentiles of the estimation sample. The short-dashed line is the replicated linear benchmark.", size(vsmall)) ///
+	legend(order(1 "95% confidence band" 2 "Marginal effect") rows(1) position(6) ring(0) region(lstyle(none))) ///
 	xsize(8) ysize(5) ///
 	name(ext_marginal_income, replace)
 
@@ -278,13 +282,13 @@ file write threshold_tex "\caption{Appendix threshold grid search for the piecew
 file write threshold_tex "\label{tab:threshold_grid}" _n
 file write threshold_tex "\small" _n
 file write threshold_tex "\begin{tabular}{rccc}" _n
-file write threshold_tex "\hline" _n
+file write threshold_tex "\toprule" _n
 file write threshold_tex "Threshold (\%) & RSS & N & Beta on scarcity \\\\" _n
-file write threshold_tex "\hline" _n
+file write threshold_tex "\midrule" _n
 forvalues i = 1/`=_N' {
 	file write threshold_tex `"`=string(threshold[`i'],"%9.0f")' & `=string(rss[`i'],"%15.3f")' & `=string(n_obs[`i'],"%9.0f")' & `=string(beta_scarcity[`i'],"%9.4f")' \\\\"' _n
 }
-file write threshold_tex "\hline" _n
+file write threshold_tex "\bottomrule" _n
 file write threshold_tex "\multicolumn{4}{p{0.9\textwidth}}{\footnotesize Notes: Threshold search for the available-freshwater scarcity measure under the two-way fixed-effects piecewise specification. The 120-specification grid itself is unchanged; this table is an appendix diagnostic used to assess whether the median split is close to the RSS-minimizing cutoff.}" _n
 file write threshold_tex "\end{tabular}" _n
 file write threshold_tex "\end{table}" _n
@@ -309,23 +313,25 @@ drop _merge
 keep if WSS_price < .
 
 gen shadow_price_proxy = WaterProductivity / (1 + WaterStress_p99 / 100)
-keep iso3 CountryName WaterStress_p99 WaterProductivity WSS_price shadow_price_proxy
+gen byte label_flag = shadow_price_proxy >= 60 | WSS_price >= 3
+keep iso3 CountryName WaterStress_p99 WaterProductivity WSS_price shadow_price_proxy label_flag
 sort WSS_price
 
 save "$EXT_RESULTS_RAW/shadow_price_sample.dta", replace
 export delimited using "$EXT_RESULTS_RAW/shadow_price_sample.csv", replace
 
 twoway ///
-	(scatter shadow_price_proxy WSS_price, msymbol(circle) msize(medium) mcolor(navy) mlabel(iso3) mlabsize(vsmall) mlabcolor(black)) ///
+	(scatter shadow_price_proxy WSS_price, msymbol(circle) msize(medium) mcolor(navy)) ///
+	(scatter shadow_price_proxy WSS_price if label_flag, msymbol(circle) msize(medium) mcolor(navy) mlabel(iso3) mlabsize(vsmall) mlabcolor(black) mlabposition(0)) ///
 	(lfit shadow_price_proxy WSS_price, lcolor(maroon) lwidth(medthin)), ///
 	graphregion(color(white)) ///
 	plotregion(color(white)) ///
 	xtitle("Observed total WSS price (USD/m3, 2008)") ///
 	ytitle("Normalized implied shadow-price proxy") ///
-	title("Observed OECD prices and implied shadow-price proxy") ///
-	subtitle("Proxy = Water productivity / (1 + water stress ratio)") ///
-	note("The water-share term (1-alpha-theta) is normalized to 1 because the source paper does not calibrate it.") ///
-	legend(order(1 "Country observations" 2 "Linear fit") rows(1) size(vsmall)) ///
+	title("Observed OECD prices and implied shadow-price proxy", size(large)) ///
+	subtitle("Proxy = water productivity / (1 + water stress ratio)", size(medsmall)) ///
+	note("Labels are shown only for high-price or high-proxy observations. The water-share term is normalized to 1.", size(vsmall)) ///
+	legend(order(1 "Country observations" 3 "Linear fit") rows(1) position(6) ring(0) region(lstyle(none))) ///
 	name(ext_shadow_price, replace)
 
 graph export "$EXT_FIGURES/shadow_price_proxy.png", width(1800) replace

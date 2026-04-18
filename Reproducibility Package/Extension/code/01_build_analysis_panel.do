@@ -101,4 +101,82 @@ export delimited using "$EXT_RESULTS_RAW/panel_diagnostics.csv", replace
 
 use "$EXT_DATA/analysis_panel.dta", clear
 
+quietly summarize GDP_gr if sample_available, detail
+local gdp_min : display %9.0f r(min)
+local gdp_p50 : display %9.0f r(p50)
+local gdp_mean : display %9.0f r(mean)
+local gdp_max : display %9.0f r(max)
+local gdp_sd : display %9.0f r(sd)
+
+quietly summarize Freshwater_withdrawal_rIR_p99 if sample_internal, detail
+local internal_min : display %9.0f r(min)
+local internal_p50 : display %9.0f r(p50)
+local internal_mean : display %9.0f r(mean)
+local internal_max : display %9.0f r(max)
+local internal_sd : display %9.0f r(sd)
+
+quietly summarize FreshwaterWithdrawal_rtrwr_p99 if sample_renewable, detail
+local renewable_min : display %9.0f r(min)
+local renewable_p50 : display %9.0f r(p50)
+local renewable_mean : display %9.0f r(mean)
+local renewable_max : display %9.0f r(max)
+local renewable_sd : display %9.0f r(sd)
+
+quietly summarize WaterStress_p99 if sample_available, detail
+local available_min : display %9.0f r(min)
+local available_p50 : display %9.0f r(p50)
+local available_mean : display %9.0f r(mean)
+local available_max : display %9.0f r(max)
+local available_sd : display %9.0f r(sd)
+
+quietly summarize ln_total_water_withdrawal_pc if sample_available, detail
+local water_pc_min : display %9.1f r(min)
+local water_pc_p50 : display %9.1f r(p50)
+local water_pc_mean : display %9.1f r(mean)
+local water_pc_max : display %9.1f r(max)
+local water_pc_sd : display %9.1f r(sd)
+
+quietly summarize lnGDP if sample_available, detail
+local lngdp_min : display %9.1f r(min)
+local lngdp_p50 : display %9.1f r(p50)
+local lngdp_mean : display %9.1f r(mean)
+local lngdp_max : display %9.1f r(max)
+local lngdp_sd : display %9.1f r(sd)
+
+foreach scalar_label in ///
+	gdp_min gdp_p50 gdp_mean gdp_max gdp_sd ///
+	internal_min internal_p50 internal_mean internal_max internal_sd ///
+	renewable_min renewable_p50 renewable_mean renewable_max renewable_sd ///
+	available_min available_p50 available_mean available_max available_sd ///
+	water_pc_min water_pc_p50 water_pc_mean water_pc_max water_pc_sd ///
+	lngdp_min lngdp_p50 lngdp_mean lngdp_max lngdp_sd {
+	local `scalar_label' = trim("``scalar_label''")
+}
+
+capture file close sumstats_tex
+file open sumstats_tex using "$EXT_TABLES/summary_statistics.tex", write replace text
+file write sumstats_tex "\begin{table}[htbp]" _n
+file write sumstats_tex "\centering" _n
+file write sumstats_tex "\caption{Summary statistics of key variables}" _n
+file write sumstats_tex "\label{tab:sumstats}" _n
+file write sumstats_tex "\small" _n
+file write sumstats_tex "\begin{tabular}{lccccc}" _n
+file write sumstats_tex "\toprule" _n
+file write sumstats_tex "Variable & Min & Median & Mean & Max & SD \\\\" _n
+file write sumstats_tex "\midrule" _n
+file write sumstats_tex `"Annual GDP growth (\%) & `gdp_min' & `gdp_p50' & `gdp_mean' & `gdp_max' & `gdp_sd' \\\\"' _n
+file write sumstats_tex "\addlinespace" _n
+file write sumstats_tex "\multicolumn{6}{l}{\textit{Water scarcity (freshwater withdrawal as \% of):}} \\\\" _n
+file write sumstats_tex `"\quad Internal resources & `internal_min' & `internal_p50' & `internal_mean' & `internal_max' & `internal_sd' \\\\"' _n
+file write sumstats_tex `"\quad Total renewable resources & `renewable_min' & `renewable_p50' & `renewable_mean' & `renewable_max' & `renewable_sd' \\\\"' _n
+file write sumstats_tex `"\quad Available freshwater & `available_min' & `available_p50' & `available_mean' & `available_max' & `available_sd' \\\\"' _n
+file write sumstats_tex "\addlinespace" _n
+file write sumstats_tex "\multicolumn{6}{l}{\textit{Controls (in logarithms):}} \\\\" _n
+file write sumstats_tex `"\quad Total water withdrawal per capita & `water_pc_min' & `water_pc_p50' & `water_pc_mean' & `water_pc_max' & `water_pc_sd' \\\\"' _n
+file write sumstats_tex `"\quad GDP per capita (PPP, 2017 USD) & `lngdp_min' & `lngdp_p50' & `lngdp_mean' & `lngdp_max' & `lngdp_sd' \\\\"' _n
+file write sumstats_tex "\bottomrule" _n
+file write sumstats_tex "\end{tabular}" _n
+file write sumstats_tex "\end{table}" _n
+file close sumstats_tex
+
 ext_display_step "Analysis panel saved to $EXT_DATA/analysis_panel.dta and .csv"

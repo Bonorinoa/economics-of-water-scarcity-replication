@@ -58,15 +58,19 @@ file open baseline_tex using "$EXT_TABLES/baseline_verification.tex", write repl
 file write baseline_tex "\begin{table}[htbp]" _n
 file write baseline_tex "\centering" _n
 file write baseline_tex "\caption{Baseline verification for the water scarcity extension}" _n
+file write baseline_tex "\label{tab:baseline}" _n
 file write baseline_tex "\small" _n
 file write baseline_tex "\begin{tabular}{lcccc}" _n
-file write baseline_tex "\hline" _n
-file write baseline_tex "Sample & Beta & SE & Observations & $R^2$ \\\\" _n
-file write baseline_tex "\hline" _n
+file write baseline_tex "\toprule" _n
+file write baseline_tex "Sample & Beta & SE & Observations & R-squared \\\\" _n
+file write baseline_tex "\midrule" _n
 forvalues i = 1/`=_N' {
-	file write baseline_tex `"`=sample[`i']' & `=string(beta_scarcity[`i'],"%9.4f")' & `=string(se_scarcity[`i'],"%9.4f")' & `=string(n_obs[`i'],"%9.0fc")' & `=string(r_squared[`i'],"%9.3f")' \\\\"' _n
+	local sample_label = sample[`i']
+	if "`sample_label'" == "all_years" local sample_label "All years"
+	if "`sample_label'" == "1990_2020" local sample_label "1990--2020 window"
+	file write baseline_tex `"`sample_label' & `=string(beta_scarcity[`i'],"%9.4f")' & `=string(se_scarcity[`i'],"%9.4f")' & `=string(n_obs[`i'],"%9.0fc")' & `=string(r_squared[`i'],"%9.3f")' \\\\"' _n
 }
-file write baseline_tex "\hline" _n
+file write baseline_tex "\bottomrule" _n
 file write baseline_tex "\multicolumn{5}{p{0.92\textwidth}}{\footnotesize Notes: The target replication benchmark is Table 3, column (3) of Frost, Mart\'inez Jaramillo and Madeira (2025): beta = -0.102, SE = 0.0388 and N = 4,583.}" _n
 file write baseline_tex "\end{tabular}" _n
 file write baseline_tex "\end{table}" _n

@@ -22,6 +22,23 @@ local share_negative : display %5.1f 100 * r(N) / `n_success'
 quietly count if ame_p_value < 0.05
 local share_sig05 : display %5.1f 100 * r(N) / `n_success'
 
+quietly count if ame_scarcity < 0
+local negative_count : display %9.0f r(N)
+quietly count if ame_scarcity < 0 & ame_p_value < 0.05
+local negative_sig_count : display %9.0f r(N)
+quietly count if ame_scarcity > 0 & ame_p_value < 0.05
+local positive_sig_count : display %9.0f r(N)
+
+quietly summarize ame_scarcity if inlist(estimator, "country_fe_only", "two_way_fe", "first_diff", "q25", "q50", "q75"), detail
+local within_mean_beta : display %6.3f r(mean)
+local within_median_beta : display %6.3f r(p50)
+
+quietly summarize ame_scarcity if estimator == "between", detail
+local between_mean_beta : display %6.3f r(mean)
+
+quietly summarize ame_scarcity if estimator == "random_effects", detail
+local re_mean_beta : display %6.3f r(mean)
+
 use "$EXT_RESULTS_RAW/meta_regression_coefficients_ame.dta", clear
 
 quietly summarize coef if term == "d_quadratic", meanonly
@@ -79,14 +96,65 @@ local baseline_beta : display %6.3f beta_scarcity[1]
 local baseline_se : display %6.3f se_scarcity[1]
 local baseline_n : display %9.0fc n_obs[1]
 local baseline_r2 : display %6.3f r_squared[1]
+local baseline_n_tex = subinstr("`baseline_n'", ",", "{,}", .)
+
+use "$EXT_DATA/analysis_panel.dta", clear
+
+quietly levelsof id if analysis_window_1990_2020, local(window_ids)
+local country_window : word count `window_ids'
+quietly levelsof id if sample_internal, local(internal_ids)
+local country_internal : word count `internal_ids'
+quietly levelsof id if sample_available, local(available_ids)
+local country_available : word count `available_ids'
+
+keep if analysis_window_1990_2020
+gen double Total_gr = GDP_gr
+gen double rhs_scarcity = WaterStress_p99
+gen double rhs_use = ln_total_water_withdrawal_pc
+gen double rhs_income = lnGDP
+gen double rhs_aux1 = rhs_scarcity * rhs_income
+keep if !missing(Total_gr, rhs_scarcity, rhs_use, rhs_income, rhs_aux1)
+xtset id Year
+
+capture noisily reghdfe Total_gr rhs_scarcity rhs_use rhs_income rhs_aux1, absorb(id Year) vce(cluster id)
+if _rc {
+	ext_abort "failed to estimate the income-interaction model while writing paper values"
+}
+
+tempvar income_sample
+gen byte `income_sample' = e(sample)
+quietly summarize rhs_income if `income_sample', detail
+local income_mean : display %6.2f r(mean)
+local income_median : display %6.2f r(p50)
+
+local inc_level : display %6.3f _b[rhs_scarcity]
+local inc_slope : display %6.3f _b[rhs_aux1]
+local me_ln8 : display %6.3f (_b[rhs_scarcity] + 8 * _b[rhs_aux1])
+local me_ln10 : display %6.3f (_b[rhs_scarcity] + 10 * _b[rhs_aux1])
+local me_ln11 : display %6.3f (_b[rhs_scarcity] + 11 * _b[rhs_aux1])
+local benchmark_cross : display %6.2f (($EXT_BASELINE_BETA - _b[rhs_scarcity]) / _b[rhs_aux1])
+local zero_cross : display %6.2f (-_b[rhs_scarcity] / _b[rhs_aux1])
+
+use "$EXT_RESULTS_RAW/threshold_grid_search.dta", clear
+gsort rank
+local best_threshold : display %9.0f threshold[1]
+local best_threshold_rss : display %9.0fc rss[1]
+local best_threshold_beta : display %6.3f beta_scarcity[1]
 
 foreach scalar_label in ///
 	mean_beta median_beta p25_beta p75_beta ///
 	share_negative share_sig05 ///
+	negative_count negative_sig_count positive_sig_count ///
+	within_mean_beta within_median_beta between_mean_beta re_mean_beta ///
 	b_quad p_quad b_inc p_inc b_thr p_thr ///
 	b_re p_re b_noyear p_noyear b_bet p_bet ///
 	b_q25 p_q25 b_q50 p_q50 b_q75 p_q75 ///
-	baseline_beta baseline_se baseline_n baseline_r2 {
+	baseline_beta baseline_se baseline_n baseline_r2 ///
+	baseline_n_tex ///
+	country_window country_internal country_available ///
+	income_mean income_median inc_level inc_slope ///
+	me_ln8 me_ln10 me_ln11 benchmark_cross zero_cross ///
+	best_threshold best_threshold_rss best_threshold_beta {
 	local `scalar_label' = trim("``scalar_label''")
 }
 
@@ -98,9 +166,9 @@ file write dist_tex "\caption{Distribution of the 120 AME estimates}" _n
 file write dist_tex "\label{tab:dist}" _n
 file write dist_tex "\small" _n
 file write dist_tex "\begin{tabular}{lc}" _n
-file write dist_tex "\hline" _n
+file write dist_tex "\toprule" _n
 file write dist_tex "Statistic & Value \\\\" _n
-file write dist_tex "\hline" _n
+file write dist_tex "\midrule" _n
 file write dist_tex `"Successful specifications & `n_success' \\\\"' _n
 file write dist_tex `"Mean AME & `mean_beta' \\\\"' _n
 file write dist_tex `"Median AME & `median_beta' \\\\"' _n
@@ -108,10 +176,56 @@ file write dist_tex `"25th percentile & `p25_beta' \\\\"' _n
 file write dist_tex `"75th percentile & `p75_beta' \\\\"' _n
 file write dist_tex `"Share negative (\%) & `share_negative' \\\\"' _n
 file write dist_tex `"Share significant at 5\% (\%) & `share_sig05' \\\\"' _n
-file write dist_tex "\hline" _n
+file write dist_tex "\bottomrule" _n
 file write dist_tex "\end{tabular}" _n
 file write dist_tex "\end{table}" _n
 file close dist_tex
+
+capture file close term_values
+file open term_values using "$EXT_PAPER/term_paper_values.tex", write replace text
+file write term_values `"\newcommand{\BaselineBeta}{`baseline_beta'}"' _n
+file write term_values `"\newcommand{\BaselineSE}{`baseline_se'}"' _n
+file write term_values `"\newcommand{\BaselineN}{`baseline_n_tex'}"' _n
+file write term_values `"\newcommand{\BaselineRtwo}{`baseline_r2'}"' _n
+file write term_values `"\newcommand{\TotalSpecs}{`n_success'}"' _n
+file write term_values `"\newcommand{\MeanAME}{`mean_beta'}"' _n
+file write term_values `"\newcommand{\MedianAME}{`median_beta'}"' _n
+file write term_values `"\newcommand{\PTwentyFiveAME}{`p25_beta'}"' _n
+file write term_values `"\newcommand{\PSeventyFiveAME}{`p75_beta'}"' _n
+file write term_values `"\newcommand{\ShareNegative}{`share_negative'}"' _n
+file write term_values `"\newcommand{\ShareSigFive}{`share_sig05'}"' _n
+file write term_values `"\newcommand{\NegativeCount}{`negative_count'}"' _n
+file write term_values `"\newcommand{\NegativeSigCount}{`negative_sig_count'}"' _n
+file write term_values `"\newcommand{\PositiveSigCount}{`positive_sig_count'}"' _n
+file write term_values `"\newcommand{\WithinMeanAME}{`within_mean_beta'}"' _n
+file write term_values `"\newcommand{\WithinMedianAME}{`within_median_beta'}"' _n
+file write term_values `"\newcommand{\BetweenMeanAME}{`between_mean_beta'}"' _n
+file write term_values `"\newcommand{\RandomEffectsMeanAME}{`re_mean_beta'}"' _n
+file write term_values `"\newcommand{\QuadShift}{`b_quad'}"' _n
+file write term_values `"\newcommand{\IncomeShift}{`b_inc'}"' _n
+file write term_values `"\newcommand{\ThresholdShift}{`b_thr'}"' _n
+file write term_values `"\newcommand{\NoYearShift}{`b_noyear'}"' _n
+file write term_values `"\newcommand{\RandomEffectsShift}{`b_re'}"' _n
+file write term_values `"\newcommand{\BetweenShift}{`b_bet'}"' _n
+file write term_values `"\newcommand{\QTwentyFiveShift}{`b_q25'}"' _n
+file write term_values `"\newcommand{\QFiftyShift}{`b_q50'}"' _n
+file write term_values `"\newcommand{\QSeventyFiveShift}{`b_q75'}"' _n
+file write term_values `"\newcommand{\MergedCountryCount}{`country_window'}"' _n
+file write term_values `"\newcommand{\InternalCountryCount}{`country_internal'}"' _n
+file write term_values `"\newcommand{\AvailableCountryCount}{`country_available'}"' _n
+file write term_values `"\newcommand{\IncomeEffectLevel}{`inc_level'}"' _n
+file write term_values `"\newcommand{\IncomeEffectSlope}{`inc_slope'}"' _n
+file write term_values `"\newcommand{\MEAtLnEight}{`me_ln8'}"' _n
+file write term_values `"\newcommand{\MEAtLnTen}{`me_ln10'}"' _n
+file write term_values `"\newcommand{\MEAtLnEleven}{`me_ln11'}"' _n
+file write term_values `"\newcommand{\IncomeBenchmarkCross}{`benchmark_cross'}"' _n
+file write term_values `"\newcommand{\IncomeZeroCross}{`zero_cross'}"' _n
+file write term_values `"\newcommand{\IncomeSampleMean}{`income_mean'}"' _n
+file write term_values `"\newcommand{\IncomeSampleMedian}{`income_median'}"' _n
+file write term_values `"\newcommand{\BestThreshold}{`best_threshold'}"' _n
+file write term_values `"\newcommand{\BestThresholdRSS}{`best_threshold_rss'}"' _n
+file write term_values `"\newcommand{\BestThresholdSlope}{`best_threshold_beta'}"' _n
+file close term_values
 
 capture file close draft_tex
 file open draft_tex using "$EXT_PAPER/draft.tex", write replace text
