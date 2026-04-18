@@ -40,8 +40,8 @@ local common_top ///
 	plotregion(color(white)) ///
 	xscale(range(1 120)) ///
 	xlabel(1(10)120, labsize(small)) ///
-	ylabel(-0.4(0.2)0, angle(0) labsize(vsmall)) ///
-	yscale(range(-0.45 0.15)) ///
+	ylabel(-4(2)4, angle(0) labsize(vsmall)) ///
+	yscale(range(-4 4)) ///
 	ytitle("Average marginal effect") ///
 	xtitle("Specification rank (sorted by AME)") ///
 	yline(`=baseline_beta', lpattern(dash) lcolor(black)) ///
@@ -60,8 +60,7 @@ twoway ///
 	legend(order(2 "Country FE" 3 "Two-way FE" 4 "Random effects" 5 "Between" 6 "First diff" 7 "Q25" 8 "Q50" 9 "Q75") rows(2) size(vsmall) position(6) ring(0) region(lstyle(none))) ///
 	title("Specification curve", size(large)) ///
 	subtitle("AME estimates with 95% confidence intervals", size(medsmall)) ///
-	note("The plotting range is trimmed to improve readability; a small number of confidence intervals extend beyond the y-axis limits.", size(vsmall)) ///
-	xsize(10.5) ysize(4.2) ///
+	xsize(8.8) ysize(5.2) ///
 	`common_top' ///
 	name(ext_fig_spec_curve, replace)
 
@@ -100,7 +99,7 @@ twoway ///
 graph export "$EXT_FIGURES/fig_decision_matrix.png", width(3300) replace
 graph export "$EXT_FIGURES/fig_decision_matrix.pdf", replace
 
-graph combine ext_fig_spec_curve ext_fig_decision_matrix, rows(2) cols(1) imargin(0 0 0 0) xsize(10.5) ysize(7.8) name(ext_specification_curve, replace)
+graph combine ext_fig_spec_curve ext_fig_decision_matrix, rows(2) cols(1) imargin(0 0 0 0) xsize(8.8) ysize(8.8) name(ext_specification_curve, replace)
 graph export "$EXT_FIGURES/specification_curve.png", width(3300) replace
 graph export "$EXT_FIGURES/specification_curve.pdf", replace
 
@@ -212,7 +211,7 @@ save "$EXT_RESULTS_RAW/marginal_effect_income_data.dta", replace
 export delimited using "$EXT_RESULTS_RAW/marginal_effect_income_data.csv", replace
 
 twoway ///
-	(rarea ci_high ci_low lnGDP, color(eltblue%35) lcolor(none)) ///
+	(rarea ci_high ci_low lnGDP, color(eltblue%55) lcolor(eltblue%90) lwidth(vthin)) ///
 	(line marginal_effect lnGDP, lcolor(navy) lwidth(medthick)), ///
 	graphregion(color(white)) ///
 	plotregion(color(white)) ///

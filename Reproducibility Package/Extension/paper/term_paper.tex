@@ -43,9 +43,11 @@ The analysis reuses the replication data pipeline, which merges four formatted p
 
 The dependent variable is annual real GDP growth in percentage points. The baseline controls are log total freshwater withdrawal per capita ($\ln W^{pc}_{ct}$) and log GDP per capita at purchasing power parity ($\ln \text{GDP}^{pc}_{ct}$). Water scarcity is measured as freshwater withdrawal divided by one of three availability denominators: internal renewable resources, total renewable resources, or available freshwater. Internal resources capture domestic hydrology only; total renewable resources add transboundary inflows; available freshwater further adjusts for environmental water requirements. Each scarcity ratio is capped at 100 percent to limit leverage from extreme observations.
 
-Table~\ref{tab:sumstats} reports the key descriptive statistics generated directly from the extension analysis panel. The sample exhibits substantial cross-country dispersion in scarcity alongside a mean GDP growth rate close to 4\% and a standard deviation close to 6 percentage points. Two measurement issues matter for interpretation. First, Aquastat series are observed intermittently and then interpolated, smoothing within-country scarcity variation and likely attenuating fixed-effects estimates. Second, national aggregates cannot capture subnational water stress or sector-specific exposure.
+Table~\ref{tab:sumstats} reports the key descriptive statistics generated directly from the extension analysis panel. The sample exhibits substantial cross-country dispersion in scarcity alongside a mean GDP growth rate close to 3\% and a standard deviation close to 6 percentage points. Two measurement issues matter for interpretation. First, Aquastat series are observed intermittently and then interpolated, smoothing within-country scarcity variation and likely attenuating fixed-effects estimates. Second, national aggregates cannot capture subnational water stress or sector-specific exposure.
 
 \input{../tables/summary_statistics.tex}
+
+\clearpage
 
 %% ======================================================================
 \section{Model Specification}
@@ -176,6 +178,8 @@ Figure~\ref{fig:histogram} shows the heavy negative mass concentrated between ro
 
 Table~\ref{tab:meta_ame} reports the meta-regression coefficients. Four patterns stand out.
 
+\input{../tables/meta_regression_ame.tex}
+
 \textit{Functional form matters.} Relative to the linear baseline, both the quadratic (\QuadShift) and threshold (\ThresholdShift) specifications shift the AME downward, indicating that allowing for nonlinearity amplifies the estimated scarcity drag. The income interaction also shifts the average AME downward by \IncomeShift, whereas the water-use interaction has almost no effect.
 
 \textit{Estimator choice reveals a within--between divergence.} The between estimator shifts the AME upward by \BetweenShift\ and random effects by \RandomEffectsShift. Added to the baseline constant reported in Table~\ref{tab:meta_ame}, the between estimator yields a mildly positive average effect - a sign reversal indicating that long-run cross-sectional differences between water-scarce and water-abundant countries look very different from the within-country relationship. This divergence supports the authors' use of fixed-effects estimation.
@@ -183,8 +187,6 @@ Table~\ref{tab:meta_ame} reports the meta-regression coefficients. Four patterns
 \textit{Year effects matter.} Dropping year fixed effects shifts the AME downward by \NoYearShift, confirming that global time trends partially offset the within-country scarcity signal in the two-way FE baseline.
 
 \textit{Quantile patterns are suggestive.} Q25 shifts the AME by \QTwentyFiveShift, Q50 by \QFiftyShift, and Q75 by \QSeventyFiveShift, consistent with the interpretation that scarcity drag is strongest in low-growth episodes. These estimates are appropriately caveated because the quantile estimator omits year fixed effects.
-
-\input{../tables/meta_regression_ame.tex}
 
 \subsection*{Income heterogeneity}
 
